@@ -10,11 +10,18 @@
 
 import sys
 from log import *
-from doip import *
+import doip
 
 def main():
     LogTr("Enter main().")
-    Tester = cDoip()
+
+    Tester = doip.Doip("127.0.0.2", "127.0.0.1", 9998, 9999)
+    Tester.Conn()
+    Tester.ReqRteAct()
+    Tester.RespRteAct()
+    Tester.ReqDiag("1003")
+    Tester.RespDiag()
+
     LogTr("Exit main().")
 
 if __name__ == "__main__":
