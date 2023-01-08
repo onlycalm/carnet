@@ -15,7 +15,7 @@ import doip
 def main():
     LogTr("Enter main().")
 
-    Tester = doip.Doip("127.0.0.2", "127.0.0.1", 9998, 9999)
+    Tester = doip.cDoip("192.168.101.10", "192.168.101.5", 9998, 13400)
     Tester.Conn()
     Tester.ReqRteAct()
     Tester.RespRteAct()
