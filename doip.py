@@ -47,7 +47,7 @@ class cMsgPset:
         #Payload type(GH_PT).
         #Pos = 2, Len = 2.
         class cPlTyp:
-            def __inti__(self):
+            def __init__(self):
                 LogTr("Enter cPlTyp.__init__()")
 
                 #Mandatory.
@@ -358,7 +358,7 @@ class cPlDiagPosAck:
 
         LogTr("Exit cPlDiagPosAck.__init__()")
 
-class cMsg：
+class cMsg:
     #ISO 13400-2-2012.
     #Doip message structure.
 
@@ -414,7 +414,6 @@ class cDoip:
         LogTr("Enter cDoip.Conn()")
 
         if self.ConnSta == False:
-            LogTr("Connecting to a doip entity.")
             #Tcp socket client.
             self.Sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #Tcp socket.
             self.Sock.bind((self.SrcIpAdr, self.SrcPt))
@@ -525,8 +524,8 @@ class Msg:
     def __init__(self):
         LogTr("Enter Msg.__init__()")
 
-        self.MsgPset = MsgPset()
-        self.ProtoVer = self.MsgPset.Hdr.ProtoVer.Vin]
+        self.MsgPset = cMsgPset()
+        self.ProtoVer = self.MsgPset.Hdr.ProtoVer.Vin
         LogDbg("self.ProtoVer = 0x%02X" % self.ProtoVer)
         self.InvProtoVer = (~self.ProtoVer & 0xFF)
         LogDbg("self.InvProtoVer = 0x%02X" % self.InvProtoVer)
