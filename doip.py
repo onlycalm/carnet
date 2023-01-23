@@ -1,4 +1,4 @@
-import socket
+import tcp
 from log import *
 
 class cMsgPset:
@@ -407,6 +407,7 @@ class cDoip:
         LogDbg(f"self.ConnSta = {self.ConnSta}")
         self.Msg = Msg()
         self.MsgPset = cMsgPset()
+        self.TcpClt = tcp.cTcpClt()
 
         LogTr("Exit cDoip.__init__()")
 
@@ -414,12 +415,7 @@ class cDoip:
         LogTr("Enter cDoip.Conn()")
 
         if self.ConnSta == False:
-            #Tcp socket client.
-            self.Sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #Tcp socket.
-            self.Sock.bind((self.SrcIpAdr, self.SrcPt))
-            LogScs("Socket binding succeeded.")
-            self.Sock.connect((self.TgtIpAdr, self.TgtPt))
-            LogScs("Socket connection succeeded.")
+            self.TcpClt.Conn()
             self.ConnSta = True
         else:
             LogWrn("Connected doip entity!")
@@ -430,9 +426,7 @@ class cDoip:
         LogTr("Enter cDoip.DisConn()")
 
         if self.ConnSta == True:
-            self.Sock.shutdown(socket.SHUT_RDWR)
-            self.Sock.close()
-            self.Sk = None
+            self.TcpClt.DisConn()
             self.ConnSta = False
             LogScs("Socket connection disconnected.")
         else:
@@ -444,7 +438,7 @@ class cDoip:
         LogTr("Enter cDoip.Snd()")
 
         if self.ConnSta == True:
-            self.Sock.send(bytes.fromhex(Msg))
+            self.TcpClt.Snd(bytes.fromhex(Msg))
             LogInf("Doip send: " + Msg)
         else:
             LogErr("Socket not connected, sending failed.")
@@ -455,7 +449,7 @@ class cDoip:
         LogTr("Enter cDoip.Recv()")
 
         if self.ConnSta == True:
-            Msg = self.Sock.recv(1024).hex().upper()
+            Msg = self.TcpClt.Recv()
             LogInf("Doip recv: " + Msg)
         else:
             LogErr("Socket not connected, receiving failed.")
@@ -654,3 +648,8 @@ class Msg:
         LogDbg(f"self.PreDiagMsg = {self.PreDiagMsg}")
 
         LogTr("Exit Msg.AssemPlMsgDiag()")
+
+if __name__ == "__main__":
+    LogTr("__main__")
+
+    Tstr = cDoip("127.0.0.1", "127.0.0.1", 9998, 13400)

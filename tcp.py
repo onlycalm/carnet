@@ -1,3 +1,4 @@
+import sys
 import socket
 from log import *
 
@@ -90,6 +91,8 @@ class cTcpClt:
         LogDbg(f"self.RmtPt = {self.RmtPt}")
         self.ConnSta = False
         LogDbg(f"self.ConnSta = {self.ConnSta}")
+        self.Sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #Tcp socket.
+        LogScs("Create Socket succeeded.")
 
         LogTr("Exit cTcpClt.__init__()")
 
@@ -97,7 +100,6 @@ class cTcpClt:
         LogTr("Enter cTcpClt.Conn()")
 
         if self.ConnSta == False:
-            self.Sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #Tcp socket.
             self.Sock.bind((self.LocIpAdr, self.LocPt))
             LogScs("Socket binding succeeded.")
             self.Sock.connect((self.RmtIpAdr, self.RmtPt))
@@ -145,24 +147,33 @@ class cTcpClt:
 
         return Msg
 
-if 1:
-    TcpClt = cTcpClt(LocPt = 9998)
-    TcpClt.Conn()
-    TcpClt.Snd("AA")
+if __name__ == "__main__":
+    LogTr("__main__")
 
-    while True:
-        Msg = TcpClt.Recv()
-        if Msg != "":
-            LogDbg(Msg)
-            TcpClt.Snd("AA")
+    if sys.argv[1] == "-Clt":
+        LogTr("Test tcp client.")
 
-    TcpClt.DisConn()
-else:
-    TcpSer = cTcpSer()
-    TcpSer.Lsn()
+        TcpClt = cTcpClt()
+        TcpClt.Conn()
+        TcpClt.Snd("AA")
 
-    while True:
-        Msg = TcpSer.Recv()
-        if Msg != "":
-            LogDbg(Msg)
-            TcpSer.Snd("BB")
+        for i in range(3):
+            Msg = TcpClt.Recv()
+            if Msg != "":
+                LogDbg(Msg)
+                TcpClt.Snd("AA")
+
+        TcpClt.DisConn()
+    elif sys.argv[1] == "-Ser":
+        LogTr("Test tcp server.")
+
+        TcpSer = cTcpSer()
+        TcpSer.Lsn()
+
+        while True:
+            Msg = TcpSer.Recv()
+            if Msg != "":
+                LogDbg(Msg)
+                TcpSer.Snd("BB")
+
+        TcpSer.DisConn()
