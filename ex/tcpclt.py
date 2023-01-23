@@ -1,10 +1,10 @@
 import socket
 
-RmtIpAddr = "127.0.0.1"
+RmtIpAdr = "127.0.0.1"
 RmtPt = 9999
 
 Socket = socket.socket()
-Socket.connect((RmtIpAddr, RmtPt))
+Socket.connect((RmtIpAdr, RmtPt))
 
 while True:
     RmtMsg = input("Client: ").strip()
