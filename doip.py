@@ -387,9 +387,83 @@ class cMsg:
 
         LogTr("Exit cMsg.__init__()")
 
-class cDoip:
+class cDoipSer:
+    def __init__(self, SrcIpAdr = "127.0.0.1", SrcPt = 13400):
+        LogTr("Enter cDoipSer.__init__()")
+
+        self.SrcIpAdr = SrcIpAdr
+        LogDbg(f"self.SrcIpAdr = {self.SrcIpAdr}")
+        self.SrcPt = SrcPt
+        LogDbg(f"self.SrcPt = {self.SrcPt}")
+        self.ConnSta = False #Connect status. True: connected, False: not connected.
+        LogDbg(f"self.ConnSta = {self.ConnSta}")
+        self.Msg = Msg()
+        self.MsgPset = cMsgPset()
+        self.TcpSer = tcp.cTcpSer()
+
+        LogTr("Exit cDoipSer.__init__()")
+
+    def Lsn(self):
+        LogTr("Enter cDoipSer.Lsn()")
+
+        self.TcpSer.Lsn()
+        self.ConnSta = True
+
+        LogTr("Exit cDoipSer.Lsn()")
+
+    def DisConn(self):
+        LogTr("Enter cDoipSer.DisConn()")
+
+        if self.ConnSta == True:
+            self.TcpSer.DisConn()
+            self.ConnSta = False
+            LogScs("Socket connection disconnected.")
+        else:
+            LogErr("Socket disconnection failed.")
+
+        LogTr("Exit cDoipSer.DisConn()")
+
+    def Snd(self, Msg):
+        LogTr("Enter cDoipSer.Snd()")
+
+        if self.ConnSta == True:
+            self.TcpSer.Snd(Msg)
+            LogInf("Doip send: " + Msg)
+        else:
+            LogErr("Socket not connected, sending failed.")
+
+        LogTr("Exit cDoipSer.Snd()")
+
+    def Recv(self):
+        LogTr("Enter cDoipSer.Recv()")
+
+        if self.ConnSta == True:
+            Msg = self.TcpSer.Recv()
+            LogInf("Doip recv: " + Msg)
+        else:
+            Msg = ""
+            LogErr("Socket not connected, receiving failed.")
+
+        LogTr("Exit cDoipSer.Recv()")
+
+        return Msg
+
+    def IsRecvBufNone(self):
+        #LogTr("Enter cDoipSer.IsRecvBufNone()")
+
+        if self.ConnSta == True:
+            Rtn = self.TcpSer.IsRecvBufNone()
+        else:
+            Rtn = None
+            LogErr("Socket not connected.")
+
+        #LogTr("Exit cDoipSer.IsRecvBufNone()")
+
+        return Rtn
+
+class cDoipClt:
     def __init__(self, SrcIpAdr = "127.0.0.1", TgtIpAdr = "127.0.0.1", SrcPt = 9999, TgtPt = 13400, SrcAdr = 0x0E00, TgtAdr = 0xE000):
-        LogTr("Enter cDoip.__init__()")
+        LogTr("Enter cDoipClt.__init__()")
 
         self.SrcIpAdr = SrcIpAdr
         LogDbg(f"self.SrcIpAdr = {self.SrcIpAdr}")
@@ -409,10 +483,10 @@ class cDoip:
         self.MsgPset = cMsgPset()
         self.TcpClt = tcp.cTcpClt()
 
-        LogTr("Exit cDoip.__init__()")
+        LogTr("Exit cDoipClt.__init__()")
 
     def Conn(self):
-        LogTr("Enter cDoip.Conn()")
+        LogTr("Enter cDoipClt.Conn()")
 
         if self.ConnSta == False:
             self.TcpClt.Conn()
@@ -420,10 +494,10 @@ class cDoip:
         else:
             LogWrn("Connected doip entity!")
 
-        LogTr("Exit cDoip.Conn()")
+        LogTr("Exit cDoipClt.Conn()")
 
     def DisConn(self):
-        LogTr("Enter cDoip.DisConn()")
+        LogTr("Enter cDoipClt.DisConn()")
 
         if self.ConnSta == True:
             self.TcpClt.DisConn()
@@ -432,34 +506,35 @@ class cDoip:
         else:
             LogErr("Socket disconnection failed.")
 
-        LogTr("Exit cDoip.DisConn()")
+        LogTr("Exit cDoipClt.DisConn()")
 
     def Snd(self, Msg):
-        LogTr("Enter cDoip.Snd()")
+        LogTr("Enter cDoipClt.Snd()")
 
         if self.ConnSta == True:
-            self.TcpClt.Snd(bytes.fromhex(Msg))
+            self.TcpClt.Snd(Msg)
             LogInf("Doip send: " + Msg)
         else:
             LogErr("Socket not connected, sending failed.")
 
-        LogTr("Exit cDoip.Snd()")
+        LogTr("Exit cDoipClt.Snd()")
 
     def Recv(self):
-        LogTr("Enter cDoip.Recv()")
+        LogTr("Enter cDoipClt.Recv()")
 
         if self.ConnSta == True:
             Msg = self.TcpClt.Recv()
             LogInf("Doip recv: " + Msg)
         else:
+            Msg = ""
             LogErr("Socket not connected, receiving failed.")
 
-        LogTr("Exit cDoip.Recv()")
+        LogTr("Exit cDoipClt.Recv()")
 
         return Msg
 
     def ReqRteAct(self):
-        LogTr("Enter cDoip.ReqRteAct()")
+        LogTr("Enter cDoipClt.ReqRteAct()")
 
         PlMsg = self.Msg.AssemPlMsgRteActReq(self.SrcAdr)
         LogDbg(f"PlMsg = {PlMsg}")
@@ -467,10 +542,10 @@ class cDoip:
         LogDbg(f"SndMsg = {SndMsg}")
         self.Snd(SndMsg)
 
-        LogTr("Exit cDoip.ReqRteAct()")
+        LogTr("Exit cDoipClt.ReqRteAct()")
 
     def RespRteAct(self):
-        LogTr("Enter cDoip.RespRteAct()")
+        LogTr("Enter cDoipClt.RespRteAct()")
 
         RecvMsg = self.Recv()
         LogDbg(f"RecvMsg = {RecvMsg}")
@@ -486,10 +561,10 @@ class cDoip:
         else:
             LogTr("Route activation failed.")
 
-        LogTr("Exit cDoip.RespRteAct()")
+        LogTr("Exit cDoipClt.RespRteAct()")
 
     def ReqDiag(self, UsrDat):
-        LogTr("Enter cDoip.ReqDiag()")
+        LogTr("Enter cDoipClt.ReqDiag()")
 
         PlMsg = self.Msg.AssemPlMsgDiag(self.SrcAdr, self.TgtAdr, UsrDat)
         LogDbg(f"PlMsg = {PlMsg}")
@@ -497,10 +572,10 @@ class cDoip:
         LogDbg(f"SndMsg = {SndMsg}")
         self.Snd(SndMsg)
 
-        LogTr("Exit cDoip.ReqDiag()")
+        LogTr("Exit cDoipClt.ReqDiag()")
 
     def RespDiag(self):
-        LogTr("Enter cDoip.RespDiag()")
+        LogTr("Enter cDoipClt.RespDiag()")
 
         RecvMsg = self.Recv()
         LogDbg(f"RecvMsg = {RecvMsg}")
@@ -512,7 +587,20 @@ class cDoip:
         else:
             LogTr("Abnormal response of diagnosis.")
 
-        LogTr("Exit cDoip.RespDiag()")
+        LogTr("Exit cDoipClt.RespDiag()")
+
+    def IsRecvBufNone(self):
+        #LogTr("Enter cDoipClt.IsRecvBufNone()")
+
+        if self.ConnSta == True:
+            Rtn = self.TcpClt.IsRecvBufNone()
+        else:
+            Rtn = None
+            LogErr("Socket not connected.")
+
+        #LogTr("Exit cDoipClt.IsRecvBufNone()")
+
+        return Rtn
 
 class Msg:
     def __init__(self):
@@ -554,7 +642,7 @@ class Msg:
                    "%04X" % self.PlTyp +\
                    "%08X" % self.PlLen +\
                    self.PlMsg
-        LogDbg(f"Msg = {Msg}")
+        LogDbg(f"self.Msg = {self.Msg}")
 
         LogTr("Exit Msg.AssemMsg()")
 
@@ -652,4 +740,22 @@ class Msg:
 if __name__ == "__main__":
     LogTr("__main__")
 
-    Tstr = cDoip("127.0.0.1", "127.0.0.1", 9998, 13400)
+    if sys.argv[1] == "-Ser":
+        LogTr("Test tcp server.")
+
+        Ecu = cDoipSer()
+        Ecu.Lsn()
+
+        while True:
+            if Ecu.IsRecvBufNone() == False:
+                Msg = Ecu.Recv()
+                LogDbg(Msg)
+    elif sys.argv[1] == "-Clt":
+        LogTr("Test tcp client.")
+
+        Tstr = cDoipClt()
+        Tstr.Conn()
+        Tstr.ReqRteAct()
+        #Tstr.RespRteAct()
+        #Tstr.ReqDiag("1003")
+        #Tstr.RespDiag()
