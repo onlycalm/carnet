@@ -81,7 +81,7 @@ class cTcpSer:
         #LogTr("Enter cTcpSer.IsRecvBufNone()")
 
         if self.ConnSta == True:
-            if self.ConnHdl.recv(1024, socket.MSG_PEEK) == "":
+            if self.ConnHdl.recv(1024, socket.MSG_PEEK) == b'':
                 Rtn = True
             else:
                 LogTr("Receive cache is not empty.")
@@ -196,7 +196,7 @@ if __name__ == "__main__":
         while True:
             if TcpSer.IsRecvBufNone() == False:
                 Msg = TcpSer.Recv()
-                LogDbg(Msg)
+                LogDbg(f"Recv: {Msg}")
                 TcpSer.Snd("BB")
 
         TcpSer.DisConn()
@@ -210,7 +210,7 @@ if __name__ == "__main__":
         while True:
             if TcpClt.IsRecvBufNone() == False:
                 Msg = TcpClt.Recv()
-                LogDbg(Msg)
+                LogDbg(f"Recv: {Msg}")
                 TcpClt.Snd("AA")
 
         TcpClt.DisConn()

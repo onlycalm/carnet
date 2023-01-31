@@ -749,7 +749,7 @@ if __name__ == "__main__":
         while True:
             if Ecu.IsRecvBufNone() == False:
                 Msg = Ecu.Recv()
-                LogDbg(Msg)
+                LogDbg(f"Recv: {Msg}")
     elif sys.argv[1] == "-Clt":
         LogTr("Test tcp client.")
 
