@@ -397,9 +397,9 @@ class cDoipSer:
         LogDbg(f"self.SrcPt = {self.SrcPt}")
         self.ConnSta = False #Connect status. True: connected, False: not connected.
         LogDbg(f"self.ConnSta = {self.ConnSta}")
-        self.Msg = Msg()
+        self.Msg = cMsg()
         self.MsgPset = cMsgPset()
-        self.TcpSer = tcp.cTcpSer()
+        self.TcpSer = tcp.cTcpSer(SrcIpAdr, SrcPt)
 
         LogTr("Exit cDoipSer.__init__()")
 
@@ -479,9 +479,9 @@ class cDoipClt:
         LogDbg("self.TgtAdr = 0x%04X" % self.TgtAdr)
         self.ConnSta = False #Connect status. True: connected, False: not connected.
         LogDbg(f"self.ConnSta = {self.ConnSta}")
-        self.Msg = Msg()
+        self.Msg = cMsg()
         self.MsgPset = cMsgPset()
-        self.TcpClt = tcp.cTcpClt()
+        self.TcpClt = tcp.cTcpClt(SrcIpAdr, TgtIpAdr, SrcPt, TgtPt)
 
         LogTr("Exit cDoipClt.__init__()")
 
@@ -602,9 +602,9 @@ class cDoipClt:
 
         return Rtn
 
-class Msg:
+class cMsg:
     def __init__(self):
-        LogTr("Enter Msg.__init__()")
+        LogTr("Enter cMsg.__init__()")
 
         self.MsgPset = cMsgPset()
         self.ProtoVer = self.MsgPset.Hdr.ProtoVer.Vin
@@ -621,10 +621,10 @@ class Msg:
         self.Msg = ""
         LogDbg(f"self.Msg = {self.Msg}")
 
-        LogTr("Exit Msg.__init__()")
+        LogTr("Exit cMsg.__init__()")
 
     def AssemMsg(self, ProtoVer, PlTyp, PlMsg):
-        LogTr("Enter Msg.AssemMsg()")
+        LogTr("Enter cMsg.AssemMsg()")
 
         self.ProtoVer = ProtoVer
         LogDbg("self.ProtoVer = 0x%02X" % self.ProtoVer)
@@ -644,12 +644,12 @@ class Msg:
                    self.PlMsg
         LogDbg(f"self.Msg = {self.Msg}")
 
-        LogTr("Exit Msg.AssemMsg()")
+        LogTr("Exit cMsg.AssemMsg()")
 
         return self.Msg
 
     def DisassyMsg(self, Msg):
-        LogTr("Enter Msg.DisassyMsg()")
+        LogTr("Enter cMsg.DisassyMsg()")
 
         self.ProtoVer = int(Msg[0:2], 16)
         LogDbg("self.ProtoVer = 0x%02X" % self.ProtoVer)
@@ -662,10 +662,10 @@ class Msg:
         self.PlMsg = Msg[16:]
         LogDbg(f"self.PlMsg = {self.PlMsg}")
 
-        LogTr("Exit Msg.DisassyMsg()")
+        LogTr("Exit cMsg.DisassyMsg()")
 
     def AssemPlMsgRteActReq(self, SrcAdr, OemSpec = None):
-        LogTr("Enter Msg.AssemPlMsgRteActReq()")
+        LogTr("Enter cMsg.AssemPlMsgRteActReq()")
 
         self.SrcAdr = SrcAdr
         LogDbg("self.SrcAdr = 0x%04X" % self.SrcAdr)
@@ -686,12 +686,12 @@ class Msg:
                 StrOemSpec
         LogDbg(f"self.PlMsg = {self.PlMsg}")
 
-        LogTr("Exit Msg.AssemPlMsgRteActReq()")
+        LogTr("Exit cMsg.AssemPlMsgRteActReq()")
 
         return PlMsg
 
     def DisassyPlMsgRteActResp(self, PlMsg):
-        LogTr("Enter Msg.DisassyPlMsgRteActResp()")
+        LogTr("Enter cMsg.DisassyPlMsgRteActResp()")
 
         self.TstrLgAdr = int(PlMsg[0:4], 16)
         LogDbg("self.TstrLgAdr = 0x%04X" % self.TstrLgAdr)
@@ -703,10 +703,10 @@ class Msg:
         self.OemSpec = int(PlMsg[18:26], 16)
         LogDbg("self.OemSpec = 0x%08X" % self.OemSpec)
 
-        LogTr("Exit Msg.DisassyPlMsgRteActResp()")
+        LogTr("Exit cMsg.DisassyPlMsgRteActResp()")
 
     def AssemPlMsgDiag(self, SrcAdr, TgtAdr, UsrDat):
-        LogTr("Enter Msg.AssemPlMsgDiag()")
+        LogTr("Enter cMsg.AssemPlMsgDiag()")
 
         self.SrcAdr = SrcAdr
         LogDbg("self.SrcAdr = 0x%04X" % self.SrcAdr)
@@ -719,12 +719,12 @@ class Msg:
                 "%04X" % self.TgtAdr +\
                 self.UsrDat
 
-        LogTr("Exit Msg.AssemPlMsgDiag()")
+        LogTr("Exit cMsg.AssemPlMsgDiag()")
 
         return PlMsg
 
     def DisassyPlMsgDiag(self, PlMsg):
-        LogTr("Enter Msg.AssemPlMsgDiag()")
+        LogTr("Enter cMsg.AssemPlMsgDiag()")
 
         self.SrcAdr = int(PlMsg[0:4], 16)
         LogDbg("self.SrcAdr = 0x%04X" % self.SrcAdr)
@@ -735,7 +735,7 @@ class Msg:
         self.PreDiagMsg = PlMsg[10:]
         LogDbg(f"self.PreDiagMsg = {self.PreDiagMsg}")
 
-        LogTr("Exit Msg.AssemPlMsgDiag()")
+        LogTr("Exit cMsg.AssemPlMsgDiag()")
 
 if __name__ == "__main__":
     LogTr("__main__")
@@ -757,5 +757,5 @@ if __name__ == "__main__":
         Tstr.Conn()
         Tstr.ReqRteAct()
         #Tstr.RespRteAct()
-        #Tstr.ReqDiag("1003")
+        Tstr.ReqDiag("1003")
         #Tstr.RespDiag()
