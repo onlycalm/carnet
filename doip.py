@@ -542,8 +542,7 @@ class cMsg:
         return Hdr, Pl
 
 class cDoipSer:
-    def __init__(self, SrcIpAdr = "127.0.0.1", SrcPt = 13400, SrcAdr = 0xE000,
-                 TstrLgAdr = 0xE400, EntyLgAdr = 0x1005):
+    def __init__(self, SrcIpAdr = "127.0.0.1", SrcPt = 13400, SrcAdr = 0x1000, FunSrcAdr = 0xE000):
         LogTr("Enter cDoipSer.__init__()")
 
         self.SrcIpAdr = SrcIpAdr
@@ -552,12 +551,10 @@ class cDoipSer:
         LogDbg(f"self.SrcPt = {self.SrcPt}")
         self.SrcAdr = SrcAdr
         LogDbg("self.SrcAdr = 0x%04X" % self.SrcAdr)
-        self.TgtAdr = 0x0E00
-        LogDbg("self.TgtAdr = 0x%04X" % self.TgtAdr)
-        self.TstrLgAdr = TstrLgAdr
-        LogDbg("self.TstrLgAdr = 0x%04X" % self.TstrLgAdr)
-        self.EntyLgAdr = EntyLgAdr
-        LogDbg("self.EntyLgAdr = 0x%04X" % self.EntyLgAdr)
+        self.FunSrcAdr = FunSrcAdr
+        LogDbg("self.FunSrcAdr = 0x%04X" % self.FunSrcAdr)
+        self.TgtAdr = None
+        LogDbg(f"self.TgtAdr = {self.TgtAdr}")
         self.ConnSta = False #Connect status. True: connected, False: not connected.
         LogDbg(f"self.ConnSta = {self.ConnSta}")
         self.Msg = cMsg()
@@ -627,8 +624,8 @@ class cDoipSer:
     def RespRteAct(self):
         LogTr("Enter cDoipSer.RespRteAct()")
 
-        Pl = self.Msg.Pl.AssemPlRteActResp(self.TstrLgAdr,
-                                           self.EntyLgAdr,
+        Pl = self.Msg.Pl.AssemPlRteActResp(self.TgtAdr,
+                                           self.SrcAdr,
                                            self.MsgPset.Pl.RteActResp.RteActRespCode.RteScsAct,
                                            self.MsgPset.Pl.RteActResp.Rsv.Dflt)
         LogDbg(f"Pl = {Pl}")
@@ -658,7 +655,7 @@ class cDoipSer:
         LogTr("Exit cDoipSer.RespDiag()")
 
 class cDoipClt:
-    def __init__(self, SrcIpAdr = "127.0.0.1", TgtIpAdr = "127.0.0.1", SrcPt = 9999, TgtPt = 13400, SrcAdr = 0x0E00, TgtAdr = 0xE000):
+    def __init__(self, SrcIpAdr = "127.0.0.1", TgtIpAdr = "127.0.0.1", SrcPt = 9999, TgtPt = 13400, SrcAdr = 0x0E00, TgtAdr = 0x1000, FunTgtAdr = 0xE000):
         LogTr("Enter cDoipClt.__init__()")
 
         self.SrcIpAdr = SrcIpAdr
@@ -673,6 +670,8 @@ class cDoipClt:
         LogDbg("self.SrcAdr = 0x%04X" % self.SrcAdr)
         self.TgtAdr = TgtAdr
         LogDbg("self.TgtAdr = 0x%04X" % self.TgtAdr)
+        self.FunTgtAdr = FunTgtAdr
+        LogDbg("self.FunTgtAdr = 0x%04X" % self.FunTgtAdr)
         self.ConnSta = False #Connect status. True: connected, False: not connected.
         LogDbg(f"self.ConnSta = {self.ConnSta}")
         self.Msg = cMsg()
@@ -873,7 +872,7 @@ def ImitEcu():
                     LogDbg("AckCode = 0x%02X" % AckCode)
                     LogDbg(f"DiagMsg = {DiagMsg}")
 
-                    Ecu.RespDiag("AA")
+                    Ecu.RespDiag("1101")
 
 def ImitTstr():
     LogTr("Test tcp client.")
