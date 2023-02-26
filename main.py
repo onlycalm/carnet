@@ -15,12 +15,12 @@ import doip
 def main():
     LogTr("Enter main().")
 
-    Tester = doip.Doip("127.0.0.2", "127.0.0.1", 9998, 9999)
-    Tester.Conn()
-    Tester.ReqRteAct()
-    Tester.RespRteAct()
-    Tester.ReqDiag("1003")
-    Tester.RespDiag()
+    Tstr = doip.cDoip("127.0.0.1", "127.0.0.1", 9998, 13400)
+    Tstr.Conn()
+    Tstr.ReqRteAct()
+    Tstr.RespRteAct()
+    Tstr.ReqDiag("1003")
+    Tstr.RespDiag()
 
     LogTr("Exit main().")
 
