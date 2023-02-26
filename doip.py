@@ -145,10 +145,20 @@ class cMsgPset:
 
                     LogTr("Exit cActTyp.__init__()")
 
+            class cRsv:
+                def __init__(self):
+                    LogTr("Enter cActTyp.__init__()")
+
+                    self.Dflt = 0x00000000 #Default
+                    LogDbg("self.Dflt = 0x%08X" % self.Dflt)
+
+                    LogTr("Exit cActTyp.__init__()")
+
             def __init__(self):
                 LogTr("Enter cRteActReq.__init__()")
 
                 self.ActTyp = self.cActTyp()
+                self.Rsv = self.cRsv()
 
                 LogTr("Exit cRteActReq.__init__()")
 
@@ -207,10 +217,20 @@ class cMsgPset:
 
                     LogTr("Exit cRteActRespCode.__init__()")
 
+            class cRsv:
+                def __init__(self):
+                    LogTr("Enter cRteActRespCode.__init__()")
+
+                    self.Dflt = 0x00000000 #Default
+                    LogDbg("self.Dflt = 0x%08X" % self.Dflt)
+
+                    LogTr("Exit cRteActRespCode.__init__()")
+
             def __init__(self):
                 LogTr("Enter cRteActResp.__init__()")
 
                 self.RteActRespCode = self.cRteActRespCode()
+                self.Rsv = self.cRsv()
 
                 LogTr("Exit cRteActResp.__init__()")
 
@@ -288,113 +308,256 @@ class cMsgPset:
 
         LogTr("Exit cMsgPset.__init__()")
 
-class cPlRteActReq:
-    def __init__(self):
-        LogTr("Enter cPlRteActReq.__init__()")
-
-        #Mandatory.
-        self.SrcAdr = 0
-        LogDbg("self.SrcAdr = 0x%04X" % self.SrcAdr)
-        self.ActTyp = 0
-        LogDbg("self.ActTyp = 0x%02X" % self.ActTyp)
-        self.IsoRsv = 0
-        LogDbg("self.IsoRsv = 0x%08X" % self.IsoRsv)
-
-        #Optional.
-        self.OemRsv = 0
-        LogDbg("self.OemRsv = 0x%08X" % self.OemRsv)
-
-        LogTr("Exit cPlRteActReq.__init__()")
-
-class cPlRteActResp:
-    def __init__(self):
-        LogTr("Enter cPlRteActResp.__init__()")
-
-        #Mandatory.
-        self.TstrLgAdr = 0
-        LogDbg("self.TstrLgAdr = 0x%04X" % self.TstrLgAdr)
-        self.DoipEntyLgAdr = 0
-        LogDbg("self.DoipEntyLgAdr = 0x%04X" % self.DoipEntyLgAdr)
-        self.RteActRespCode = 0
-        LogDbg("self.RteActRespCode = 0x%02X" % self.RteActRespCode)
-        self.IsoRsv = 0
-        LogDbg("self.IsoRsv = 0x%08X" % self.IsoRsv)
-
-        #Optional.
-        self.OemRsv = None
-        LogDbg(f"self.OemRsv = {self.OemRsv}")
-
-        LogTr("Exit cPlRteActResp.__init__()")
-
-class cPlDiag:
-    def __init__(self):
-        LogTr("Enter cPlDiag.__init__()")
-
-        #Mandatory.
-        self.SrcAdr = 0
-        LogDbg("self.SrcAdr = 0x%04X" % self.SrcAdr)
-        self.TgtAdr = 0
-        LogDbg("self.TgtAdr = 0x%04X" % self.TgtAdr)
-        self.UsrDat = 0
-        LogDbg(f"self.UsrDat = {self.UsrDat}")
-
-        LogTr("Exit cPlDiag.__init__()")
-
-class cPlDiagPosAck:
-    def __init__(self):
-        LogTr("Enter cPlDiagPosAck.__init__()")
-
-        #Mandatory.
-        self.SrcAdr = 0
-        LogDbg("self.SrcAdr = 0x%04X" % self.SrcAdr)
-        self.TgtAdr = 0
-        LogDbg("self.TgtAdr = 0x%04X" % self.TgtAdr)
-        self.AckCode = 0
-        LogDbg("self.AckCode = 0x%02X" % self.AckCode)
-
-        #Optional.
-        self.PreDiagMsg = None
-        LogDbg(f"self.PreDiagMsg = {self.PreDiagMsg}")
-
-        LogTr("Exit cPlDiagPosAck.__init__()")
-
 class cMsg:
     #ISO 13400-2-2012.
     #Doip message structure.
 
     class cHdr:
-        def __inti__(self, ProtoVer = 0x00, PlTyp = 0x00, PlLen = 0):
+        def __init__(self):
             LogTr("Enter cHdr.__init__()")
 
-            self.ProtoVer = ProtoVer
-            LogDbg("self.ProtoVer = 0x%02X" % self.ProtoVer)
-            self.InvProtoVer = (~self.ProtoVer & 0xFF)
-            LogDbg("self.InvProtoVer = 0x%02X" % self.InvProtoVer)
-            self.PlTyp = PlTyp
-            LogDbg("self.PlTyp = 0x%04X" % self.PlTyp)
-            self.PlLen = PlLen
-            LogDbg(f"self.PlLen = {self.PlLen}")
+            pass
 
             LogTr("Exit cHdr.__init__()")
 
-    def __init__(self, ProtoVer = 0x00, PlTyp = 0x00, PlLen = 0, Pl = ""):
+        def AssemHdr(self, ProtoVer, PlTyp, PlLen):
+            LogTr("Enter cHdr.AssemHdr()")
+
+            LogDbg("ProtoVer = 0x%02X" % ProtoVer)
+            InvProtoVer = (~ProtoVer & 0xFF)
+            LogDbg("InvProtoVer = 0x%02X" % InvProtoVer)
+            LogDbg("PlTyp = 0x%04X" % PlTyp)
+            LogDbg(f"PlLen = {PlLen}")
+
+            Hdr = "%02X" % ProtoVer +\
+                  "%02X" % InvProtoVer +\
+                  "%04X" % PlTyp +\
+                  "%08X" % PlLen
+            LogDbg(f"Hdr = {Hdr}")
+
+            LogTr("Exit cHdr.AssemHdr()")
+
+            return Hdr
+
+        def PrsHdr(self, Hdr):
+            LogTr("Enter cHdr.PrsHdr()")
+
+            LogDbg(f"Hdr = {Hdr}")
+
+            ProtoVer = int(Hdr[0:2], 16)
+            LogDbg("ProtoVer = 0x%02X" % ProtoVer)
+            InvProtoVer = int(Hdr[2:4], 16)
+            LogDbg("InvProtoVer = 0x%02X" % InvProtoVer)
+            PlTyp = int(Hdr[4:8], 16)
+            LogDbg("PlTyp = 0x%04X" % PlTyp)
+            PlLen = int(Hdr[8:16], 16)
+            LogDbg(f"PlLen = {PlLen}")
+
+            LogTr("Exit cHdr.PrsHdr()")
+
+            return ProtoVer, InvProtoVer, PlTyp, PlLen
+
+    class cPl:
+        def __init__(self):
+            LogTr("Enter cPl.__init__()")
+
+            pass
+
+            LogTr("Exit cPl.__init__()")
+
+        def AssemPlRteActReq(self, SrcAdr, ActTyp, Rsv, OemSpec = None):
+            LogTr("Enter cPl.AssemPlRteActReq()")
+
+            #External test equipment address information.
+            #Mandatory.
+            LogDbg("SrcAdr = 0x%04X" % SrcAdr)
+            LogDbg("ActTyp = 0x%02X" % ActTyp)
+            LogDbg("Rsv = 0x%08X" % Rsv)
+
+            #Reserved and OEM specific data.
+            #Optional.
+            LogDbg("OemSpec = " + "" if OemSpec == None else "%08X" % OemSpec)
+
+            Pl = "%04X" % SrcAdr +\
+                  "%02X" % ActTyp +\
+                  "%08X" % Rsv +\
+                  "" if OemSpec == None else "%08X" % OemSpec
+            LogDbg(f"Pl = {Pl}")
+
+            LogTr("Exit cPl.AssemPlRteActReq()")
+
+            return Pl
+
+        def AssemPlRteActResp(self, TstrLgAdr, EntyLgAdr, RteActRespCode, Rsv, OemSpec = None):
+            LogTr("Enter cPl.AssemPlRteActResp()")
+
+            #External test equipment address information.
+            #Mandatory.
+            LogDbg("TstrLgAdr = 0x%04X" % TstrLgAdr)
+
+            #Routing activation status information.
+            #Mandatory.
+            LogDbg("EntyLgAdr = 0x%04X" % EntyLgAdr)
+            LogDbg("RteActRespCode = 0x%02X" % RteActRespCode)
+            LogDbg("Rsv = 0x%08X" % Rsv)
+
+            #Optional.
+            LogDbg("OemSpec = " + "" if OemSpec == None else "%08X" % OemSpec)
+
+            Pl = "%04X" % TstrLgAdr +\
+                 "%04X" % EntyLgAdr +\
+                 "%02X" % RteActRespCode +\
+                 "%08X" % Rsv +\
+                  "" if OemSpec == None else "%08X" % OemSpec
+            LogTr(f"Pl = {Pl}")
+
+            LogTr("Exit cPl.AssemPlRteActResp()")
+
+            return Pl
+
+        def PrsPlRteActReq(self, Pl):
+            LogTr("Enter cPl.PrsPlRteActReq()")
+
+            LogDbg(f"Pl = {Pl}")
+
+            #External test equipment address information.
+            #Mandatory.
+            SrcAdr = int(Pl[0:4], 16)
+            LogDbg("SrcAdr = 0x%04X" % SrcAdr)
+            ActTyp = int(Pl[4:6], 16)
+            LogDbg("ActTyp = 0x%02X" % ActTyp)
+            Rsv = int(Pl[6:14], 16)
+            LogDbg("Rsv = 0x%08X" % Rsv)
+
+            #Reserved and OEM specific data.
+            #Optional.
+            OemSpec = None if Pl[14:22] == "" else "%08X" % int(Pl[14:22], 16)
+            LogDbg("OemSpec = " + "" if OemSpec == None else "%08X" % OemSpec)
+
+            LogTr("Exit cPl.PrsPlRteActReq()")
+
+            return SrcAdr, ActTyp, Rsv, OemSpec
+
+        def PrsPlRteActResp(self, Pl):
+            LogTr("Enter cPl.PrsPlRteActResp()")
+
+            LogDbg(f"Pl = {Pl}")
+
+            #External test equipment address information.
+            #Mandatory.
+            TstrLgAdr = int(Pl[0:4], 16)
+            LogDbg("TstrLgAdr = 0x%04X" % TstrLgAdr)
+
+            #Routing activation status information.
+            #Mandatory.
+            EntyLgAdr = int(Pl[4:8], 16)
+            LogDbg("EntyLgAdr = 0x%04X" % EntyLgAdr)
+            RteActRespCode = int(Pl[8:10], 16)
+            LogDbg("RteActRespCode = 0x%02X" % RteActRespCode)
+            Rsv = int(Pl[10:18], 16)
+            LogDbg("Rsv = 0x%08X" % Rsv)
+
+            #Optional.
+            OemSpec = None if Pl[18:26] == "" else "%08X" % int(Pl[18:26], 16)
+            LogDbg("OemSpec = " + "" if OemSpec == None else "%08X" % OemSpec)
+
+            LogTr("Exit cPl.PrsPlRteActResp()")
+
+            return TstrLgAdr, EntyLgAdr, RteActRespCode, Rsv, OemSpec
+
+        def AssemPlDiag(self, SrcAdr, TgtAdr, UsrDat):
+            LogTr("Enter cPl.AssemPlDiag()")
+
+            #Logical address information.
+            #Mandatory.
+            LogDbg("SrcAdr = 0x%04X" % SrcAdr)
+            LogDbg("TgtAdr = 0x%04X" % TgtAdr)
+
+            #Diagnostic message data.
+            #Mandatory.
+            LogDbg("UsrDat = {UsrDat}")
+
+            Pl = "%04X" % SrcAdr +\
+                 "%04X" % TgtAdr +\
+                 UsrDat
+            LogDbg("Pl = {Pl}")
+
+            LogTr("Exit cPl.AssemPlDiag()")
+
+            return Pl
+
+        def PrsPlDiag(self, Pl):
+            LogTr("Enter cPl.PrsPlDiag()")
+
+            #Logical address information.
+            #Mandatory.
+            SrcAdr = int(Pl[0:4], 16)
+            LogDbg("SrcAdr = 0x%04X" % SrcAdr)
+            TgtAdr = int(Pl[4:8], 16)
+            LogDbg("TgtAdr = 0x%04X" % TgtAdr)
+
+            #Diagnostic message acknowledge information.
+            #Mandatory.
+            AckCode = int(Pl[8:10], 16)
+            LogDbg("AckCode = 0x%02X" % AckCode)
+
+            #Optional.
+            DiagMsg = None if Pl[10:] == "" else Pl[10:]
+            LogDbg(f"DiagMsg = {DiagMsg}")
+
+            LogTr("Exit cPl.PrsPlDiag()")
+
+            return SrcAdr, TgtAdr, AckCode, DiagMsg
+
+    def __init__(self):
         LogTr("Enter cMsg.__init__()")
 
-        self.Hdr = self.cHdr(ProtoVer, PlTyp, PlLen)
+        self.Hdr = self.cHdr()
         LogDbg(f"self.Hdr = {self.Hdr}")
-        self.Pl = Pl
+        self.Pl = self.cPl()
         LogDbg(f"self.Pl = {self.Pl}")
 
         LogTr("Exit cMsg.__init__()")
 
+    def AssemMsg(self, Hdr, Pl):
+        LogTr("Enter cMsg.AssemMsg()")
+
+        Msg = Hdr + Pl
+        LogDbg(f"Msg = {Msg}")
+
+        LogTr("Exit cMsg.AssemMsg()")
+
+        return Msg
+
+    def PrsMsg(self, Msg):
+        LogTr("Enter cMsg.PrsMsg()")
+
+        Hdr = Msg[0:16]
+        LogDbg(f"Hdr = {Hdr}")
+        Pl = Msg[16:]
+        LogDbg(f"Pl = {Pl}")
+
+        LogTr("Exit cMsg.PrsMsg()")
+
+        return Hdr, Pl
+
 class cDoipSer:
-    def __init__(self, SrcIpAdr = "127.0.0.1", SrcPt = 13400):
+    def __init__(self, SrcIpAdr = "127.0.0.1", SrcPt = 13400, SrcAdr = 0xE000,
+                 TstrLgAdr = 0xE400, EntyLgAdr = 0x1005):
         LogTr("Enter cDoipSer.__init__()")
 
         self.SrcIpAdr = SrcIpAdr
         LogDbg(f"self.SrcIpAdr = {self.SrcIpAdr}")
         self.SrcPt = SrcPt
         LogDbg(f"self.SrcPt = {self.SrcPt}")
+        self.SrcAdr = SrcAdr
+        LogDbg("self.SrcAdr = 0x%04X" % self.SrcAdr)
+        self.TgtAdr = 0x0E00
+        LogDbg("self.TgtAdr = 0x%04X" % self.TgtAdr)
+        self.TstrLgAdr = TstrLgAdr
+        LogDbg("self.TstrLgAdr = 0x%04X" % self.TstrLgAdr)
+        self.EntyLgAdr = EntyLgAdr
+        LogDbg("self.EntyLgAdr = 0x%04X" % self.EntyLgAdr)
         self.ConnSta = False #Connect status. True: connected, False: not connected.
         LogDbg(f"self.ConnSta = {self.ConnSta}")
         self.Msg = cMsg()
@@ -452,14 +615,47 @@ class cDoipSer:
         #LogTr("Enter cDoipSer.IsRecvBufNone()")
 
         if self.ConnSta == True:
-            Rtn = self.TcpSer.IsRecvBufNone()
+            RecvBufSta = self.TcpSer.IsRecvBufNone()
         else:
-            Rtn = None
+            RecvBufSta = None
             LogErr("Socket not connected.")
 
         #LogTr("Exit cDoipSer.IsRecvBufNone()")
 
-        return Rtn
+        return RecvBufSta
+
+    def RespRteAct(self):
+        LogTr("Enter cDoipSer.RespRteAct()")
+
+        Pl = self.Msg.Pl.AssemPlRteActResp(self.TstrLgAdr,
+                                           self.EntyLgAdr,
+                                           self.MsgPset.Pl.RteActResp.RteActRespCode.RteScsAct,
+                                           self.MsgPset.Pl.RteActResp.Rsv.Dflt)
+        LogDbg(f"Pl = {Pl}")
+        Hdr = self.Msg.Hdr.AssemHdr(self.MsgPset.Hdr.ProtoVer.v2012,
+                                    self.MsgPset.Hdr.PlTyp.RteActResp,
+                                    len(Pl) // 2)
+        LogDbg(f"Hdr = {Hdr}")
+        SndMsg = self.Msg.AssemMsg(Hdr, Pl)
+        LogDbg(f"SndMsg = {SndMsg}")
+        self.Snd(SndMsg)
+
+        LogTr("Exit cDoipSer.RespRteAct()")
+
+    def RespDiag(self, UsrDat):
+        LogTr("Enter cDoipSer.RespDiag()")
+
+        Pl = self.Msg.Pl.AssemPlDiag(self.SrcAdr, self.TgtAdr, UsrDat)
+        LogDbg(f"Pl = {Pl}")
+        Hdr = self.Msg.Hdr.AssemHdr(self.MsgPset.Hdr.ProtoVer.v2012,
+                                    self.MsgPset.Hdr.PlTyp.DiagMsg,
+                                    len(Pl) // 2)
+        LogDbg(f"Hdr = {Hdr}")
+        SndMsg = self.Msg.AssemMsg(Hdr, Pl)
+        LogDbg(f"SndMsg = {SndMsg}")
+        self.Snd(SndMsg)
+
+        LogTr("Exit cDoipSer.RespDiag()")
 
 class cDoipClt:
     def __init__(self, SrcIpAdr = "127.0.0.1", TgtIpAdr = "127.0.0.1", SrcPt = 9999, TgtPt = 13400, SrcAdr = 0x0E00, TgtAdr = 0xE000):
@@ -536,9 +732,15 @@ class cDoipClt:
     def ReqRteAct(self):
         LogTr("Enter cDoipClt.ReqRteAct()")
 
-        PlMsg = self.Msg.AssemPlMsgRteActReq(self.SrcAdr)
-        LogDbg(f"PlMsg = {PlMsg}")
-        SndMsg = self.Msg.AssemMsg(self.MsgPset.Hdr.ProtoVer.v2012, self.MsgPset.Hdr.PlTyp.RteActReq, PlMsg)
+        Pl = self.Msg.Pl.AssemPlRteActReq(self.SrcAdr,
+                                          self.MsgPset.Pl.RteActReq.ActTyp.Dflt,
+                                          self.MsgPset.Pl.RteActReq.Rsv.Dflt)
+        LogDbg(f"Pl = {Pl}")
+        Hdr = self.Msg.Hdr.AssemHdr(self.MsgPset.Hdr.ProtoVer.v2012,
+                                    self.MsgPset.Hdr.PlTyp.RteActReq,
+                                    len(Pl) // 2)
+        LogDbg(f"Hdr = {Hdr}")
+        SndMsg = self.Msg.AssemMsg(Hdr, Pl)
         LogDbg(f"SndMsg = {SndMsg}")
         self.Snd(SndMsg)
 
@@ -549,26 +751,41 @@ class cDoipClt:
 
         RecvMsg = self.Recv()
         LogDbg(f"RecvMsg = {RecvMsg}")
-        self.Msg.DisassyMsg(RecvMsg)
-        self.Msg.DisassyPlMsgRteActResp(self.Msg.PlMsg)
+        Hdr, Pl = self.Msg.PrsMsg(RecvMsg)
+        LogDbg(f"Hdr = {Hdr}")
+        LogDbg(f"Pl = {Pl}")
+        ProtoVer, InvProtoVer, PlTyp, PlLen = self.Msg.Hdr.PrsHdr(Hdr)
+        LogDbg("ProtoVer = 0x%02X" % ProtoVer)
+        LogDbg("InvProtoVer = 0x%02X" % InvProtoVer)
+        LogDbg("PlTyp = 0x%04X" % PlTyp)
+        LogDbg(f"PlLen = {PlLen}")
+        TstrLgAdr, EntyLgAdr, RteActRespCode, Rsv, OemSpec = self.Msg.Pl.PrsPlRteActResp(Pl)
+        LogDbg("TstrLgAdr = 0x%04X" % TstrLgAdr)
+        LogDbg("EntyLgAdr = 0x%04X" % EntyLgAdr)
+        LogDbg("RteActRespCode = 0x%02X" % RteActRespCode)
+        LogDbg("Rsv = 0x%08X" % Rsv)
 
-        if self.RteActRespCode == self.MsgPset.Pl.RteActResp.RteActRespCode.RteScsAct:
+        if RteActRespCode == self.MsgPset.Pl.RteActResp.RteActRespCode.RteScsAct:
             LogTr("Route activation succeeded.")
-            self.TstrLgAdr = self.Msg.TstrLgAdr
-            LogDbg(f"self.TstrLgAdr = {self.TstrLgAdr}")
-            self.DoipEntyLgAdr = self.Msg.DoipEntyLgAdr
-            LogDbg(f"self.DoipEntyLgAdr = {self.DoipEntyLgAdr}")
         else:
             LogTr("Route activation failed.")
 
         LogTr("Exit cDoipClt.RespRteAct()")
 
+        return PlTyp, RteActRespCode
+
     def ReqDiag(self, UsrDat):
         LogTr("Enter cDoipClt.ReqDiag()")
 
-        PlMsg = self.Msg.AssemPlMsgDiag(self.SrcAdr, self.TgtAdr, UsrDat)
-        LogDbg(f"PlMsg = {PlMsg}")
-        SndMsg = self.Msg.AssemMsg(self.MsgPset.Hdr.ProtoVer.v2012, self.MsgPset.Hdr.PlTyp.DiagMsg, PlMsg)
+        LogDbg(f"UsrDat = {UsrDat}")
+
+        Pl = self.Msg.Pl.AssemPlDiag(self.SrcAdr, self.TgtAdr, UsrDat)
+        LogDbg(f"Pl = {Pl}")
+        Hdr = self.Msg.Hdr.AssemHdr(self.MsgPset.Hdr.ProtoVer.v2012,
+                                    self.MsgPset.Hdr.PlTyp.DiagMsg,
+                                    len(Pl) // 2)
+        LogDbg(f"Hdr = {Hdr}")
+        SndMsg = self.Msg.AssemMsg(Hdr, Pl)
         LogDbg(f"SndMsg = {SndMsg}")
         self.Snd(SndMsg)
 
@@ -579,15 +796,28 @@ class cDoipClt:
 
         RecvMsg = self.Recv()
         LogDbg(f"RecvMsg = {RecvMsg}")
-        self.Msg.DisassyMsg(RecvMsg)
-        self.Msg.DisassyPlMsgDiag(self.Msg.PlMsg)
+        Hdr, Pl = self.Msg.PrsMsg(RecvMsg)
+        LogDbg(f"Hdr = {Hdr}")
+        LogDbg(f"Pl = {Pl}")
+        ProtoVer, InvProtoVer, PlTyp, PlLen = self.Msg.Hdr.PrsHdr(Hdr)
+        LogDbg("ProtoVer = 0x%02X" % ProtoVer)
+        LogDbg("InvProtoVer = 0x%02X" % InvProtoVer)
+        LogDbg("PlTyp = 0x%04X" % PlTyp)
+        LogDbg(f"PlLen = {PlLen}")
+        SrcAdr, TgtAdr, AckCode, DiagMsg = self.Msg.Pl.PrsPlDiag(Pl)
+        LogDbg("SrcAdr = 0x%04X" % SrcAdr)
+        LogDbg("TgtAdr = 0x%04X" % TgtAdr)
+        LogDbg("AckCode = 0x%02X" % AckCode)
+        LogDbg("DiagMsg = " + "" if DiagMsg == None else "%0X" % DiagMsg)
 
-        if self.PlTyp == self.MsgPset.Hdr.PlTyp.DiagMsgPosAck:
+        if PlTyp == self.MsgPset.Hdr.PlTyp.DiagMsgPosAck:
             LogTr("Diagnostic normal response.")
         else:
             LogTr("Abnormal response of diagnosis.")
 
         LogTr("Exit cDoipClt.RespDiag()")
+
+        return PlTyp, AckCode
 
     def IsRecvBufNone(self):
         #LogTr("Enter cDoipClt.IsRecvBufNone()")
@@ -602,160 +832,63 @@ class cDoipClt:
 
         return Rtn
 
-class cMsg:
-    def __init__(self):
-        LogTr("Enter cMsg.__init__()")
+def ImitEcu():
+    LogTr("Test tcp server.")
 
-        self.MsgPset = cMsgPset()
-        self.ProtoVer = self.MsgPset.Hdr.ProtoVer.Vin
-        LogDbg("self.ProtoVer = 0x%02X" % self.ProtoVer)
-        self.InvProtoVer = (~self.ProtoVer & 0xFF)
-        LogDbg("self.InvProtoVer = 0x%02X" % self.InvProtoVer)
-        self.PlTyp = self.MsgPset.Hdr.PlTyp.GenDoipHdrNegAck
-        LogDbg("self.PlTyp = 0x%04X" % self.PlTyp)
-        self.PlLen = 0
-        LogDbg(f"self.PlLen = {self.PlLen}")
-        self.PlMsg = ""
-        LogDbg(f"self.PlMsg = {self.PlMsg}")
+    Ecu = cDoipSer()
+    Ecu.Lsn()
 
-        self.Msg = ""
-        LogDbg(f"self.Msg = {self.Msg}")
+    while True:
+        if Ecu.IsRecvBufNone() == False:
+            RecvMsg = Ecu.Recv()
+            LogDbg(f"RecvMsg: {RecvMsg}")
 
-        LogTr("Exit cMsg.__init__()")
+            if RecvMsg != "":
+                Hdr, Pl = Ecu.Msg.PrsMsg(RecvMsg)
+                LogDbg(f"Hdr = {Hdr}")
+                LogDbg(f"Pl = {Pl}")
 
-    def AssemMsg(self, ProtoVer, PlTyp, PlMsg):
-        LogTr("Enter cMsg.AssemMsg()")
+                ProtoVer, InvProtoVer, PlTyp, PlLen = Ecu.Msg.Hdr.PrsHdr(Hdr)
+                LogDbg("ProtoVer = 0x%02X" % ProtoVer)
+                LogDbg("InvProtoVer = 0x%02X" % InvProtoVer)
+                LogDbg("PlTyp = 0x%04X" % PlTyp)
+                LogDbg(f"PlLen = {PlLen}")
 
-        self.ProtoVer = ProtoVer
-        LogDbg("self.ProtoVer = 0x%02X" % self.ProtoVer)
-        self.InvProtoVer = (~self.ProtoVer & 0xFF)
-        LogDbg("self.InvProtoVer = 0x%02X" % self.InvProtoVer)
-        self.PlTyp = PlTyp
-        LogDbg("self.PlTyp = 0x%04X" % self.PlTyp)
-        self.PlLen = int(len(PlMsg) / 2)
-        LogDbg(f"self.PlLen = {self.PlLen}")
-        self.PlMsg = PlMsg
-        LogDbg(f"self.PlMsg = {self.PlMsg}")
+                if PlTyp == Ecu.MsgPset.Hdr.PlTyp.RteActReq:
+                    LogTr("Routing activation request.")
+                    SrcAdr, ActTyp, Rsv, OemSpec = Ecu.Msg.Pl.PrsPlRteActReq(Pl)
+                    LogDbg("SrcAdr = 0x%04X" % SrcAdr)
+                    LogDbg("ActTyp = 0x%02X" % ActTyp)
+                    LogDbg("Rsv = 0x%08X" % Rsv)
+                    LogDbg("OemSpec = " + "" if OemSpec == None else "%08X" % OemSpec)
+                    Ecu.TgtAdr = SrcAdr
+                    LogDbg("Ecu.TgtAdr = 0x%04X" % Ecu.TgtAdr)
 
-        self.Msg = "%02X" % self.ProtoVer +\
-                   "%02X" % self.InvProtoVer +\
-                   "%04X" % self.PlTyp +\
-                   "%08X" % self.PlLen +\
-                   self.PlMsg
-        LogDbg(f"self.Msg = {self.Msg}")
+                    Ecu.RespRteAct()
+                elif PlTyp == Ecu.MsgPset.Hdr.PlTyp.DiagMsg:
+                    LogTr("Diagnostic message.")
+                    SrcAdr, TgtAdr, AckCode, DiagMsg = Ecu.Msg.Pl.PrsPlDiag(Pl)
+                    LogDbg("SrcAdr = 0x%04X" % SrcAdr)
+                    LogDbg("TgtAdr = 0x%04X" % TgtAdr)
+                    LogDbg("AckCode = 0x%02X" % AckCode)
+                    LogDbg(f"DiagMsg = {DiagMsg}")
 
-        LogTr("Exit cMsg.AssemMsg()")
+                    Ecu.RespDiag("AA")
 
-        return self.Msg
+def ImitTstr():
+    LogTr("Test tcp client.")
 
-    def DisassyMsg(self, Msg):
-        LogTr("Enter cMsg.DisassyMsg()")
-
-        self.ProtoVer = int(Msg[0:2], 16)
-        LogDbg("self.ProtoVer = 0x%02X" % self.ProtoVer)
-        self.InvProtoVer = int(Msg[2:4], 16)
-        LogDbg("self.InvProtoVer = 0x%02X" % self.InvProtoVer)
-        self.PlTyp = int(Msg[4:8], 16)
-        LogDbg("self.PlTyp = 0x%04X" % self.PlTyp)
-        self.PlLen = int(Msg[8:16], 16)
-        LogDbg(f"self.PlLen = {self.PlLen}")
-        self.PlMsg = Msg[16:]
-        LogDbg(f"self.PlMsg = {self.PlMsg}")
-
-        LogTr("Exit cMsg.DisassyMsg()")
-
-    def AssemPlMsgRteActReq(self, SrcAdr, OemSpec = None):
-        LogTr("Enter cMsg.AssemPlMsgRteActReq()")
-
-        self.SrcAdr = SrcAdr
-        LogDbg("self.SrcAdr = 0x%04X" % self.SrcAdr)
-
-        #Optional.
-        self.OemSpec = OemSpec
-
-        if self.OemSpec == None:
-            LogDbg("self.OemSpec = {self.OemSpec}")
-            StrOemSpec = ""
-        else:
-            LogDbg("self.OemSpec = 0x%08X" % self.OemSpec)
-            StrOemSpec = "%08X" % self.OemSpec
-
-        PlMsg = "%04X" % self.SrcAdr +\
-                "%02X" % self.MsgPset.Pl.RteActReq.ActTyp.Dflt +\
-                "%08X" % (0x00000000) +\
-                StrOemSpec
-        LogDbg(f"self.PlMsg = {self.PlMsg}")
-
-        LogTr("Exit cMsg.AssemPlMsgRteActReq()")
-
-        return PlMsg
-
-    def DisassyPlMsgRteActResp(self, PlMsg):
-        LogTr("Enter cMsg.DisassyPlMsgRteActResp()")
-
-        self.TstrLgAdr = int(PlMsg[0:4], 16)
-        LogDbg("self.TstrLgAdr = 0x%04X" % self.TstrLgAdr)
-        self.DoipEntyLgAdr = int(PlMsg[4:8], 16)
-        LogDbg("self.DoipEntyLgAdr = 0x%04X" % self.DoipEntyLgAdr)
-        self.RteActRespCode = int(PlMsg[8:10], 16)
-        LogDbg("self.RteActRespCode = 0x%02X" % self.RteActRespCode)
-        #PlMsg[10:18] is reserved.
-        self.OemSpec = int(PlMsg[18:26], 16)
-        LogDbg("self.OemSpec = 0x%08X" % self.OemSpec)
-
-        LogTr("Exit cMsg.DisassyPlMsgRteActResp()")
-
-    def AssemPlMsgDiag(self, SrcAdr, TgtAdr, UsrDat):
-        LogTr("Enter cMsg.AssemPlMsgDiag()")
-
-        self.SrcAdr = SrcAdr
-        LogDbg("self.SrcAdr = 0x%04X" % self.SrcAdr)
-        self.TgtAdr = TgtAdr
-        LogDbg("self.TgtAdr = 0x%04X" % self.TgtAdr)
-        self.UsrDat = UsrDat
-        LogDbg(f"self.UsrDat = {self.UsrDat}")
-
-        PlMsg = "%04X" % self.SrcAdr +\
-                "%04X" % self.TgtAdr +\
-                self.UsrDat
-
-        LogTr("Exit cMsg.AssemPlMsgDiag()")
-
-        return PlMsg
-
-    def DisassyPlMsgDiag(self, PlMsg):
-        LogTr("Enter cMsg.AssemPlMsgDiag()")
-
-        self.SrcAdr = int(PlMsg[0:4], 16)
-        LogDbg("self.SrcAdr = 0x%04X" % self.SrcAdr)
-        self.TgtAdr = int(PlMsg[4:8], 16)
-        LogDbg("self.TgtAdr = 0x%04X" % self.TgtAdr)
-        self.AckCode = int(PlMsg[8:10], 16)
-        LogDbg("self.AckCode = 0x%02X" % self.AckCode)
-        self.PreDiagMsg = PlMsg[10:]
-        LogDbg(f"self.PreDiagMsg = {self.PreDiagMsg}")
-
-        LogTr("Exit cMsg.AssemPlMsgDiag()")
+    Tstr = cDoipClt()
+    Tstr.Conn()
+    Tstr.ReqRteAct()
+    Tstr.RespRteAct()
+    Tstr.ReqDiag("1003")
+    Tstr.RespDiag()
 
 if __name__ == "__main__":
     LogTr("__main__")
 
     if sys.argv[1] == "-Ser":
-        LogTr("Test tcp server.")
-
-        Ecu = cDoipSer()
-        Ecu.Lsn()
-
-        while True:
-            if Ecu.IsRecvBufNone() == False:
-                Msg = Ecu.Recv()
-                LogDbg(f"Recv: {Msg}")
+        ImitEcu()
     elif sys.argv[1] == "-Clt":
-        LogTr("Test tcp client.")
-
-        Tstr = cDoipClt()
-        Tstr.Conn()
-        Tstr.ReqRteAct()
-        #Tstr.RespRteAct()
-        Tstr.ReqDiag("1003")
-        #Tstr.RespDiag()
+        ImitTstr()
