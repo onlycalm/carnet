@@ -30,7 +30,7 @@ class cTcpSer:
 
         self.Sock.bind((self.LocIpAdr, self.LocPt))
         LogTr("Listening.")
-        self.Sock.listen(5)
+        self.Sock.listen(1) #Maximum connections.
         self.ConnHdl, (self.RmtIpAdr, self.RmtPt) = self.Sock.accept()
         LogDbg(f"self.RmtIpAdr = {self.RmtIpAdr}")
         LogDbg(f"self.RmtPt = {self.RmtPt}")
