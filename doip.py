@@ -1,3 +1,4 @@
+import sys
 import tcp
 from log import *
 
@@ -807,7 +808,7 @@ class cDoipClt:
         LogDbg("SrcAdr = 0x%04X" % SrcAdr)
         LogDbg("TgtAdr = 0x%04X" % TgtAdr)
         LogDbg("AckCode = 0x%02X" % AckCode)
-        LogDbg("DiagMsg = " + "" if DiagMsg == None else "%0X" % DiagMsg)
+        LogDbg("DiagMsg = " + "" if DiagMsg == None else DiagMsg)
 
         if PlTyp == self.MsgPset.Hdr.PlTyp.DiagMsgPosAck:
             LogTr("Diagnostic normal response.")
@@ -832,7 +833,7 @@ class cDoipClt:
         return Rtn
 
 def ImitEcu():
-    LogTr("Test tcp server.")
+    LogTr("Enter ImitEcu().")
 
     Ecu = cDoipSer()
     Ecu.Lsn()
@@ -874,8 +875,10 @@ def ImitEcu():
 
                     Ecu.RespDiag("1101")
 
+    LogTr("Exit ImitEcu().")
+
 def ImitTstr():
-    LogTr("Test tcp client.")
+    LogTr("Enter ImitTstr().")
 
     Tstr = cDoipClt()
     Tstr.Conn()
@@ -883,6 +886,8 @@ def ImitTstr():
     Tstr.RespRteAct()
     Tstr.ReqDiag("1003")
     Tstr.RespDiag()
+
+    LogTr("Exit ImitTstr().")
 
 if __name__ == "__main__":
     LogTr("__main__")
