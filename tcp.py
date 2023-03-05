@@ -7,6 +7,7 @@ class cTcpSer:
         LogTr("Enter cTcpSer.__init__()")
 
         self.Sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #Tcp socket.
+        self.Sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) #allows different sockets to reuse ipaddress.
         LogDbg(f"self.Sock = {self.Sock}")
         self.LocIpAdr = LocIpAdr
         LogDbg(f"self.LocIpAdr = {self.LocIpAdr}")
@@ -100,6 +101,7 @@ class cTcpClt:
         LogTr("Enter cTcpClt.__init__()")
 
         self.Sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #Tcp socket.
+        self.Sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) #allows different sockets to reuse ipaddress.
         LogDbg(f"self.Sock = {self.Sock}")
         self.LocIpAdr = LocIpAdr
         LogDbg(f"self.LocIpAdr = {self.LocIpAdr}")
@@ -112,36 +114,68 @@ class cTcpClt:
         self.ConnSta = False
         LogDbg(f"self.ConnSta = {self.ConnSta}")
 
-        #self.Sock.setblocking(0) #Non-blocking.
+        self.Sock.settimeout(10) #Tcp timeout is 10s.
+        self.Sock.setblocking(True) #True: Blocking, False: Non-blocking.
 
         LogTr("Exit cTcpClt.__init__()")
 
     def Conn(self):
         LogTr("Enter cTcpClt.Conn()")
 
+        ConnRst = False
+
         if self.ConnSta == False:
-            self.Sock.bind((self.LocIpAdr, self.LocPt))
-            LogScs("Socket binding succeeded.")
-            self.Sock.connect((self.RmtIpAdr, self.RmtPt))
-            LogScs("Socket connection succeeded.")
-            self.ConnSta = True
+            try:
+                self.Sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #Tcp socket.
+                self.Sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) #Allows different sockets to reuse ipaddress.
+                self.Sock.bind((self.LocIpAdr, self.LocPt))
+            except:
+                LogErr("Socket bind failed.")
+            else:
+                LogScs("Socket binding succeeded.")
+
+                try:
+                    self.Sock.connect((self.RmtIpAdr, self.RmtPt))
+                except:
+                    LogErr("Socket connect failed.")
+                else:
+                    LogScs("Socket connection succeeded.")
+                    self.ConnSta = True
+                    ConnRst = True
         else:
-            LogWrn("Connected tcp socket.")
+            LogErr("Connected tcp socket.")
 
         LogTr("Exit cTcpClt.Conn()")
+
+        return ConnRst
 
     def DisConn(self):
         LogTr("Enter cTcpClt.DisConn()")
 
+        DisConnRst = False
+
         if self.ConnSta == True:
-            self.Sock.shutdown(socket.SHUT_RDWR)
-            self.Sock.close()
-            self.ConnSta = False
-            LogScs("Socket connection disconnected.")
+            try:
+                self.Sock.shutdown(socket.SHUT_RDWR)
+            except:
+                LogErr("Socket shutdown failed.")
+            else:
+                LogScs("Socket shutdown succeeded.")
+
+                try:
+                    self.Sock.close()
+                except:
+                    LogErr("Socket close failed.")
+                else:
+                    LogScs("Socket close succeeded.")
+                    self.ConnSta = False
+                    DisConnRst = True
         else:
             LogErr("Socket disconnection failed.")
 
         LogTr("Exit cTcpClt.DisConn()")
+
+        return DisConnRst
 
     def Snd(self, Msg):
         LogTr("Enter cTcpClt.Snd()")

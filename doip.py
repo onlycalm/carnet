@@ -1,5 +1,6 @@
 import sys
 import tcp
+from exc import *
 from log import *
 
 class cMsgPset:
@@ -533,6 +534,9 @@ class cMsg:
     def PrsMsg(self, Msg):
         LogTr("Enter cMsg.PrsMsg()")
 
+        if len(Msg) // 2 < 8:
+            raise DatLenErr
+
         Hdr = Msg[0:16]
         LogDbg(f"Hdr = {Hdr}")
         Pl = Msg[16:]
@@ -684,25 +688,40 @@ class cDoipClt:
     def Conn(self):
         LogTr("Enter cDoipClt.Conn()")
 
+        ConnRst = False
+
         if self.ConnSta == False:
-            self.TcpClt.Conn()
-            self.ConnSta = True
+            if self.TcpClt.Conn():
+                LogScs("Socket connection succeeded.")
+                self.ConnSta = True
+                ConnRst = True
+            else:
+                LogErr("Socket connect failed.")
         else:
-            LogWrn("Connected doip entity!")
+            LogErr("Connected doip entity!")
 
         LogTr("Exit cDoipClt.Conn()")
+
+        return ConnRst
 
     def DisConn(self):
         LogTr("Enter cDoipClt.DisConn()")
 
+        DisConnRst = False
+
         if self.ConnSta == True:
-            self.TcpClt.DisConn()
-            self.ConnSta = False
-            LogScs("Socket connection disconnected.")
+            if self.TcpClt.DisConn():
+                LogScs("Socket connection disconnected.")
+                self.ConnSta = False
+                DisConnRst = True
+            else:
+                LogErr("Socket disconnection failed.")
         else:
             LogErr("Socket disconnection failed.")
 
         LogTr("Exit cDoipClt.DisConn()")
+
+        return DisConnRst
 
     def Snd(self, Msg):
         LogTr("Enter cDoipClt.Snd()")

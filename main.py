@@ -64,12 +64,16 @@ def ImitTstr():
 
     Tstr = cDoipClt()
     atexit.register(Tstr.DisConn)
-    Tstr.Conn()
 
-    Tstr.ReqRteAct()
-    Tstr.RespRteAct()
-    Tstr.ReqDiag("1003")
-    Tstr.RespDiag()
+    if Tstr.Conn():
+        LogScs("Tcp connection succeeded.")
+
+        Tstr.ReqRteAct()
+        PlTyp, RteActRespCode = Tstr.RespRteAct()
+        Tstr.ReqDiag("1003")
+        Tstr.RespDiag()
+    else:
+        LogErr("Tcp connect failed.")
 
     LogTr("Exit ImitTstr().")
 
