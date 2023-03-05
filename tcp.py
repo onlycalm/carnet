@@ -21,7 +21,8 @@ class cTcpSer:
         self.ConnHdl = None
         LogDbg(f"self.ConnHdl = {self.ConnHdl}")
 
-        ##self.Sock.setblocking(0) #Non-blocking.
+        self.Sock.settimeout(10) #Tcp timeout is 10s.
+        self.Sock.setblocking(True) #True: Blocking, False: Non-blocking.
 
         LogTr("Exit cTcpSer.__init__()")
 

@@ -17,6 +17,7 @@ def ImitEcu():
     LogTr("Enter ImitEcu().")
 
     Ecu = cDoipSer()
+    atexit.register(Ecu.DisConn)
     Ecu.Lsn()
 
     while True:
@@ -56,21 +57,19 @@ def ImitEcu():
 
                     Ecu.RespDiag("1101")
 
-    atexit.register(Ecu.DisConn)
-
     LogTr("Exit ImitEcu().")
 
 def ImitTstr():
     LogTr("Enter ImitTstr().")
 
     Tstr = cDoipClt()
+    atexit.register(Tstr.DisConn)
     Tstr.Conn()
+
     Tstr.ReqRteAct()
     Tstr.RespRteAct()
     Tstr.ReqDiag("1003")
     Tstr.RespDiag()
-
-    atexit.register(Tstr.DisConn)
 
     LogTr("Exit ImitTstr().")
 
