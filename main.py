@@ -88,4 +88,7 @@ def main():
     LogTr("Exit main().")
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        LogScs("Keyboard Interrupt. Exit program operation.")

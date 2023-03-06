@@ -13,19 +13,19 @@ from loguru import logger
 
 logger.remove(handler_id = None) #清除设置。
 #log输出到终端。
-logger.add(sys.stderr, format = "{time:YYYY-MM-DD HH:mm:ss.SSS} [{level}] {module}:{function}:{line} - {message}",
-           level = "TRACE", enqueue = True)
+logger.add(sys.stderr, format = "<level>{time:YYYY-MM-DD HH:mm:ss.SSS} [{level}] {module}:{function}:{line} - {message}</level>",
+           level = "TRACE", enqueue = True, colorize = True)
 #log输出到文件。
 logger.add("./log/{time:YYYY-MM-DD}.log",
            format = "{time:YYYY-MM-DD HH:mm:ss.SSS} [{level}] {module}:{function}:{line} - {message}",
-           level = "DEBUG", rotation = "00:00", retention = "1 months", compression = "zip",
+           level = "TRACE", rotation = "00:00", retention = "1 months", compression = "zip",
            encoding = "utf-8", enqueue = True)
 
-LogCrt = logger.critical #Lv50。
-LogErr = logger.error    #Lv40。
-LogWrn = logger.warning  #Lv30。
-LogScs = logger.success  #Lv25。
-LogInf = logger.info     #Lv20。
-LogDbg = logger.debug    #Lv10。
-LogTr = logger.trace     #Lv5。
+LogCrt = logger.critical #CRITICAL Lv50。
+LogErr = logger.error    #ERROR Lv40。
+LogWrn = logger.warning  #WARNING Lv30。
+LogScs = logger.success  #SUCCESS Lv25。
+LogInf = logger.info     #INFO Lv20。
+LogDbg = logger.debug    #DEBUG Lv10。
+LogTr = logger.trace     #TRACE Lv5。
 Log = logger.log         #指定等级。
