@@ -79,8 +79,8 @@ class cTcpSer:
 
         return Msg
 
-    def IsRecvBufNone(self):
-        #LogTr("Enter cTcpSer.IsRecvBufNone()")
+    def IsRecvBufMty(self):
+        #LogTr("Enter cTcpSer.IsRecvBufMty()")
 
         if self.ConnSta == True:
             if self.ConnHdl.recv(1024, socket.MSG_PEEK) == b'':
@@ -92,7 +92,7 @@ class cTcpSer:
             Rtn = None
             LogErr("Socket not connected.")
 
-        #LogTr("Exit cTcpSer.IsRecvBufNone()")
+        #LogTr("Exit cTcpSer.IsRecvBufMty()")
 
         return Rtn
 
@@ -202,8 +202,8 @@ class cTcpClt:
 
         return Msg
 
-    def IsRecvBufNone(self):
-        #LogTr("Enter cTcpClt.IsRecvBufNone()")
+    def IsRecvBufMty(self):
+        #LogTr("Enter cTcpClt.IsRecvBufMty()")
 
         if self.ConnSta == True:
             if self.Sock.recv(1024, socket.MSG_PEEK) == "":
@@ -215,7 +215,7 @@ class cTcpClt:
             Rtn = None
             LogErr("Socket not connected.")
 
-        #LogTr("Exit cTcpClt.IsRecvBufNone()")
+        #LogTr("Exit cTcpClt.IsRecvBufMty()")
 
         return Rtn
 
@@ -229,7 +229,7 @@ if __name__ == "__main__":
         TcpSer.Lsn()
 
         while True:
-            if TcpSer.IsRecvBufNone() == False:
+            if TcpSer.IsRecvBufMty() == False:
                 Msg = TcpSer.Recv()
                 LogDbg(f"Recv: {Msg}")
                 TcpSer.Snd("BB")
@@ -243,7 +243,7 @@ if __name__ == "__main__":
         TcpClt.Snd("AA")
 
         while True:
-            if TcpClt.IsRecvBufNone() == False:
+            if TcpClt.IsRecvBufMty() == False:
                 Msg = TcpClt.Recv()
                 LogDbg(f"Recv: {Msg}")
                 TcpClt.Snd("AA")
