@@ -9,20 +9,30 @@
 #
 
 import sys
+import atexit
 from log import *
-import doip
+from doip import *
+from ecu import *
+from tstr import *
 
 def main():
     LogTr("Enter main().")
 
-    Tstr = doip.cDoip("127.0.0.1", "127.0.0.1", 9998, 13400)
-    Tstr.Conn()
-    Tstr.ReqRteAct()
-    Tstr.RespRteAct()
-    Tstr.ReqDiag("1003")
-    Tstr.RespDiag()
+    if sys.argv[1] == "-Ser":
+        LogTr("Ecu.")
+        Ecu = cEcu()
+        atexit.register(Ecu.Doip.DisConn)
+        Ecu.Ota()
+    elif sys.argv[1] == "-Clt":
+        LogTr("Tester.")
+        Tstr = cTstr()
+        atexit.register(Tstr.Doip.DisConn)
+        Tstr.Ota()
 
     LogTr("Exit main().")
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        LogScs("Keyboard Interrupt. Exit program operation.")

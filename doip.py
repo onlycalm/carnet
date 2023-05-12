@@ -1,4 +1,6 @@
+import sys
 import tcp
+from exc import *
 from log import *
 
 class cMsgPset:
@@ -475,12 +477,12 @@ class cMsg:
 
             #Diagnostic message data.
             #Mandatory.
-            LogDbg("UsrDat = {UsrDat}")
+            LogDbg(f"UsrDat = {UsrDat}")
 
             Pl = "%04X" % SrcAdr +\
                  "%04X" % TgtAdr +\
                  UsrDat
-            LogDbg("Pl = {Pl}")
+            LogDbg(f"Pl = {Pl}")
 
             LogTr("Exit cPl.AssemPlDiag()")
 
@@ -488,6 +490,25 @@ class cMsg:
 
         def PrsPlDiag(self, Pl):
             LogTr("Enter cPl.PrsPlDiag()")
+
+            #Logical address information.
+            #Mandatory.
+            SrcAdr = int(Pl[0:4], 16)
+            LogDbg("SrcAdr = 0x%04X" % SrcAdr)
+            TgtAdr = int(Pl[4:8], 16)
+            LogDbg("TgtAdr = 0x%04X" % TgtAdr)
+
+            #Diagnostic message data.
+            #Mandatory.
+            UsrDat = Pl[8:]
+            LogDbg("UsrDat = {UsrDat}")
+
+            LogTr("Exit cPl.PrsPlDiag()")
+
+            return SrcAdr, TgtAdr, UsrDat
+
+        def PrsPlPosDiag(self, Pl):
+            LogTr("Enter cPl.PrsPlPosDiag()")
 
             #Logical address information.
             #Mandatory.
@@ -505,9 +526,32 @@ class cMsg:
             DiagMsg = None if Pl[10:] == "" else Pl[10:]
             LogDbg(f"DiagMsg = {DiagMsg}")
 
-            LogTr("Exit cPl.PrsPlDiag()")
+            LogTr("Exit cPl.PrsPlPosDiag()")
 
             return SrcAdr, TgtAdr, AckCode, DiagMsg
+
+        def PrsPlNegDiag(self, Pl):
+            LogTr("Enter cPl.PrsPlNegDiag()")
+
+            #Logical address information.
+            #Mandatory.
+            SrcAdr = int(Pl[0:4], 16)
+            LogDbg("SrcAdr = 0x%04X" % SrcAdr)
+            TgtAdr = int(Pl[4:8], 16)
+            LogDbg("TgtAdr = 0x%04X" % TgtAdr)
+
+            #Diagnostic message acknowledge information.
+            #Mandatory.
+            NackCode = int(Pl[8:10], 16)
+            LogDbg("NackCode = 0x%02X" % NackCode)
+
+            #Optional.
+            DiagMsg = None if Pl[10:] == "" else Pl[10:]
+            LogDbg(f"DiagMsg = {DiagMsg}")
+
+            LogTr("Exit cPl.PrsPlNegDiag()")
+
+            return SrcAdr, TgtAdr, NackCode, DiagMsg
 
     def __init__(self):
         LogTr("Enter cMsg.__init__()")
@@ -531,6 +575,9 @@ class cMsg:
 
     def PrsMsg(self, Msg):
         LogTr("Enter cMsg.PrsMsg()")
+
+        if len(Msg) // 2 < 8:
+            raise DatLenErr
 
         Hdr = Msg[0:16]
         LogDbg(f"Hdr = {Hdr}")
@@ -608,16 +655,16 @@ class cDoipSer:
 
         return Msg
 
-    def IsRecvBufNone(self):
-        #LogTr("Enter cDoipSer.IsRecvBufNone()")
+    def IsRecvBufMty(self):
+        #LogTr("Enter cDoipSer.IsRecvBufMty()")
 
         if self.ConnSta == True:
-            RecvBufSta = self.TcpSer.IsRecvBufNone()
+            RecvBufSta = self.TcpSer.IsRecvBufMty()
         else:
             RecvBufSta = None
             LogErr("Socket not connected.")
 
-        #LogTr("Exit cDoipSer.IsRecvBufNone()")
+        #LogTr("Exit cDoipSer.IsRecvBufMty()")
 
         return RecvBufSta
 
@@ -683,25 +730,40 @@ class cDoipClt:
     def Conn(self):
         LogTr("Enter cDoipClt.Conn()")
 
+        ConnRst = False
+
         if self.ConnSta == False:
-            self.TcpClt.Conn()
-            self.ConnSta = True
+            if self.TcpClt.Conn():
+                LogScs("Socket connection succeeded.")
+                self.ConnSta = True
+                ConnRst = True
+            else:
+                LogErr("Socket connect failed.")
         else:
-            LogWrn("Connected doip entity!")
+            LogErr("Connected doip entity!")
 
         LogTr("Exit cDoipClt.Conn()")
+
+        return ConnRst
 
     def DisConn(self):
         LogTr("Enter cDoipClt.DisConn()")
 
+        DisConnRst = False
+
         if self.ConnSta == True:
-            self.TcpClt.DisConn()
-            self.ConnSta = False
-            LogScs("Socket connection disconnected.")
+            if self.TcpClt.DisConn():
+                LogScs("Socket connection disconnected.")
+                self.ConnSta = False
+                DisConnRst = True
+            else:
+                LogErr("Socket disconnection failed.")
         else:
             LogErr("Socket disconnection failed.")
 
         LogTr("Exit cDoipClt.DisConn()")
+
+        return DisConnRst
 
     def Snd(self, Msg):
         LogTr("Enter cDoipClt.Snd()")
@@ -803,11 +865,11 @@ class cDoipClt:
         LogDbg("InvProtoVer = 0x%02X" % InvProtoVer)
         LogDbg("PlTyp = 0x%04X" % PlTyp)
         LogDbg(f"PlLen = {PlLen}")
-        SrcAdr, TgtAdr, AckCode, DiagMsg = self.Msg.Pl.PrsPlDiag(Pl)
+        SrcAdr, TgtAdr, AckCode, DiagMsg = self.Msg.Pl.PrsPlPosDiag(Pl)
         LogDbg("SrcAdr = 0x%04X" % SrcAdr)
         LogDbg("TgtAdr = 0x%04X" % TgtAdr)
         LogDbg("AckCode = 0x%02X" % AckCode)
-        LogDbg("DiagMsg = " + "" if DiagMsg == None else "%0X" % DiagMsg)
+        LogDbg("DiagMsg = " + "" if DiagMsg == None else DiagMsg)
 
         if PlTyp == self.MsgPset.Hdr.PlTyp.DiagMsgPosAck:
             LogTr("Diagnostic normal response.")
@@ -818,27 +880,27 @@ class cDoipClt:
 
         return PlTyp, AckCode
 
-    def IsRecvBufNone(self):
-        #LogTr("Enter cDoipClt.IsRecvBufNone()")
+    def IsRecvBufMty(self):
+        #LogTr("Enter cDoipClt.IsRecvBufMty()")
 
         if self.ConnSta == True:
-            Rtn = self.TcpClt.IsRecvBufNone()
+            Rtn = self.TcpClt.IsRecvBufMty()
         else:
             Rtn = None
             LogErr("Socket not connected.")
 
-        #LogTr("Exit cDoipClt.IsRecvBufNone()")
+        #LogTr("Exit cDoipClt.IsRecvBufMty()")
 
         return Rtn
 
 def ImitEcu():
-    LogTr("Test tcp server.")
+    LogTr("Enter ImitEcu().")
 
     Ecu = cDoipSer()
     Ecu.Lsn()
 
     while True:
-        if Ecu.IsRecvBufNone() == False:
+        if Ecu.IsRecvBufMty() == False:
             RecvMsg = Ecu.Recv()
             LogDbg(f"RecvMsg: {RecvMsg}")
 
@@ -869,13 +931,14 @@ def ImitEcu():
                     SrcAdr, TgtAdr, AckCode, DiagMsg = Ecu.Msg.Pl.PrsPlDiag(Pl)
                     LogDbg("SrcAdr = 0x%04X" % SrcAdr)
                     LogDbg("TgtAdr = 0x%04X" % TgtAdr)
-                    LogDbg("AckCode = 0x%02X" % AckCode)
-                    LogDbg(f"DiagMsg = {DiagMsg}")
+                    LogDbg(f"UsrDat = {UsrDat}")
 
                     Ecu.RespDiag("1101")
 
+    LogTr("Exit ImitEcu().")
+
 def ImitTstr():
-    LogTr("Test tcp client.")
+    LogTr("Enter ImitTstr().")
 
     Tstr = cDoipClt()
     Tstr.Conn()
@@ -883,6 +946,8 @@ def ImitTstr():
     Tstr.RespRteAct()
     Tstr.ReqDiag("1003")
     Tstr.RespDiag()
+
+    LogTr("Exit ImitTstr().")
 
 if __name__ == "__main__":
     LogTr("__main__")
