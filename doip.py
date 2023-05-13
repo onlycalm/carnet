@@ -1,3 +1,13 @@
+##
+# @file doip.py
+# @brief Doip protocol.
+# @details None.
+# @author Calm
+# @date 2023-05-13
+# @version v1.0.0
+# @copyright Calm
+#
+
 import sys
 import tcp
 from exc import *

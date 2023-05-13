@@ -1,3 +1,13 @@
+##
+# @file tcp.py
+# @brief Tcp.
+# @details None.
+# @author Calm
+# @date 2023-05-13
+# @version v1.0.0
+# @copyright Calm
+#
+
 import sys
 import socket
 from log import *

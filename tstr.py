@@ -1,3 +1,13 @@
+##
+# @file tstr.py
+# @brief Tester.
+# @details None.
+# @author Calm
+# @date 2023-05-13
+# @version v1.0.0
+# @copyright Calm
+#
+
 from log import *
 from doip import *
 
