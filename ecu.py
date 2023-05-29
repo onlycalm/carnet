@@ -41,6 +41,7 @@ class cEcu:
 
                 if PlTyp == self.Doip.MsgPset.Hdr.PlTyp.RteActReq:
                     LogTr("Routing activation request.")
+
                     SrcAdr, ActTyp, Rsv, OemSpec = self.Doip.Msg.Pl.PrsPlRteActReq(Pl)
                     LogDbg("SrcAdr = 0x%04X" % SrcAdr)
                     LogDbg("ActTyp = 0x%02X" % ActTyp)
@@ -52,11 +53,12 @@ class cEcu:
                     self.Doip.RespRteAct()
                 elif PlTyp == self.Doip.MsgPset.Hdr.PlTyp.DiagMsg:
                     LogTr("Diagnostic message.")
+
                     SrcAdr, TgtAdr, UsrDat = self.Doip.Msg.Pl.PrsPlDiag(Pl)
                     LogDbg("SrcAdr = 0x%04X" % SrcAdr)
                     LogDbg("TgtAdr = 0x%04X" % TgtAdr)
                     LogDbg(f"UsrDat = {UsrDat}")
 
-                    self.Doip.RespDiag("1101")
+                    self.Doip.PosAckDiagMsg("00")
 
         LogTr("Exit cEcu.Ota()")
