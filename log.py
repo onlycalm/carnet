@@ -1,6 +1,6 @@
 ##
 # @file log.py
-# @brief log模块。
+# @brief Log。
 # @details 无
 # @author Calm
 # @date 2021-09-01

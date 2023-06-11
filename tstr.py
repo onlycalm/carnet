@@ -1,3 +1,13 @@
+##
+# @file tstr.py
+# @brief Tester.
+# @details None.
+# @author Calm
+# @date 2023-05-13
+# @version v1.0.0
+# @copyright Calm
+#
+
 from log import *
 from doip import *
 
@@ -17,6 +27,8 @@ class cTstr:
 
             self.Doip.ReqRteAct()
             PlTyp, RteActRespCode = self.Doip.RespRteAct()
+            LogDbg("PlTyp = 0x%04X" % PlTyp)
+            LogDbg("RteActRespCode = 0x%04X" % RteActRespCode)
             self.Doip.ReqDiag("1003")
             self.Doip.RespDiag()
 

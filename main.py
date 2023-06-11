@@ -1,7 +1,7 @@
 ##
 # @file main.py
-# @brief 入口文件。
-# @details 无
+# @brief Entry file.
+# @details None.
 # @author Calm
 # @date 2022-12-28
 # @version v1.0.0
@@ -21,12 +21,12 @@ def main():
     if sys.argv[1] == "-Ser":
         LogTr("Ecu.")
         Ecu = cEcu()
-        atexit.register(Ecu.Doip.DisConn)
+        atexit.register(Ecu.Doip.DisConn) #Registering Callbacks. Exit terminal call callback function.
         Ecu.Ota()
     elif sys.argv[1] == "-Clt":
         LogTr("Tester.")
         Tstr = cTstr()
-        atexit.register(Tstr.Doip.DisConn)
+        atexit.register(Tstr.Doip.DisConn) #Registering Callbacks. Exit terminal call callback function.
         Tstr.Ota()
 
     LogTr("Exit main().")

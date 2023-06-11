@@ -1,3 +1,13 @@
+##
+# @file doip.py
+# @brief Doip protocol.
+# @details None.
+# @author Calm
+# @date 2023-05-13
+# @version v1.0.0
+# @copyright Calm
+#
+
 import sys
 import tcp
 from exc import *
@@ -686,20 +696,35 @@ class cDoipSer:
 
         LogTr("Exit cDoipSer.RespRteAct()")
 
-    def RespDiag(self, UsrDat):
-        LogTr("Enter cDoipSer.RespDiag()")
+    def PosAckDiagMsg(self, AckCode):
+        LogTr("Enter cDoipSer.PosAckDiagMsg()")
 
-        Pl = self.Msg.Pl.AssemPlDiag(self.SrcAdr, self.TgtAdr, UsrDat)
+        Pl = self.Msg.Pl.AssemPlDiag(self.SrcAdr, self.TgtAdr, AckCode)
         LogDbg(f"Pl = {Pl}")
         Hdr = self.Msg.Hdr.AssemHdr(self.MsgPset.Hdr.ProtoVer.v2012,
-                                    self.MsgPset.Hdr.PlTyp.DiagMsg,
+                                    self.MsgPset.Hdr.PlTyp.DiagMsgPosAck,
                                     len(Pl) // 2)
         LogDbg(f"Hdr = {Hdr}")
         SndMsg = self.Msg.AssemMsg(Hdr, Pl)
         LogDbg(f"SndMsg = {SndMsg}")
         self.Snd(SndMsg)
 
-        LogTr("Exit cDoipSer.RespDiag()")
+        LogTr("Exit cDoipSer.PosAckDiagMsg()")
+
+    def NegAckDiagMsg(self, NegAckCode):
+        LogTr("Enter cDoipSer.NegAckDiagMsg()")
+
+        Pl = self.Msg.Pl.AssemPlDiag(self.SrcAdr, self.TgtAdr, NegAckCode)
+        LogDbg(f"Pl = {Pl}")
+        Hdr = self.Msg.Hdr.AssemHdr(self.MsgPset.Hdr.ProtoVer.v2012,
+                                    self.MsgPset.Hdr.PlTyp.DiagMsgNegAck,
+                                    len(Pl) // 2)
+        LogDbg(f"Hdr = {Hdr}")
+        SndMsg = self.Msg.AssemMsg(Hdr, Pl)
+        LogDbg(f"SndMsg = {SndMsg}")
+        self.Snd(SndMsg)
+
+        LogTr("Exit cDoipSer.NegAckDiagMsg()")
 
 class cDoipClt:
     def __init__(self, SrcIpAdr = "127.0.0.1", TgtIpAdr = "127.0.0.1", SrcPt = 9999, TgtPt = 13400, SrcAdr = 0x0E00, TgtAdr = 0x1000, FunTgtAdr = 0xE000):
@@ -933,7 +958,7 @@ def ImitEcu():
                     LogDbg("TgtAdr = 0x%04X" % TgtAdr)
                     LogDbg(f"UsrDat = {UsrDat}")
 
-                    Ecu.RespDiag("1101")
+                    Ecu.PosAckDiagMsg("00")
 
     LogTr("Exit ImitEcu().")
 
