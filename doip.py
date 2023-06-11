@@ -14,113 +14,113 @@ from exc import *
 from log import *
 
 class cMsgPset:
-    #ISO 13400-2-2012.
-    #Doip message structure.
+    # ISO 13400-2-2012.
+    # Doip message structure.
 
     class cHdr:
-        #Protocol version.
-        #Pos = 0, Len = 1.
+        # Protocol version.
+        # Pos = 0, Len = 1.
         class cProtoVer:
             def __init__(self):
                 LogTr("Enter cProtoVer.__init__()")
 
-                self.Rsv = 0x00 #Reserved.
-                LogDbg("self.Rsv = 0x%02X" % self.Rsv)
-                self.v2010 = 0x01 #0x01: DoIP ISO/DIS 13400-2:2010.
-                LogDbg("self.v2010 = 0x%02X" % self.v2010)
-                self.v2012 = 0x02 #0x02: DoIP ISO 13400-2:2012.
-                LogDbg("self.v2012 = 0x%02X" % self.v2012)
-                self.IsoRsv = [x for x in range(0x03, 0xFF)] #0x03...0xFE: reserved by this part of ISO 13400.
+                self.Rsv = "00" # 0x00: Reserved.
+                LogDbg(f"self.Rsv = {self.Rsv}")
+                self.v2010 = "01" # 0x01: DoIP ISO/DIS 13400-2:2010.
+                LogDbg(f"self.v2010 = {self.v2010}")
+                self.v2012 = "02" # 0x02: DoIP ISO 13400-2:2012.
+                LogDbg(f"self.v2012 = {self.v2012}")
+                self.IsoRsv = "03~FE" # 0x03~0xFE: reserved by this part of ISO 13400.
                 LogDbg(f"self.IsoRsv = {self.IsoRsv}")
-                self.Vin = 0xFF #0xFF: Default value for vehicle identification request message.
-                LogDbg("self.Vin = 0x%02X" % self.Vin)
+                self.Vin = "FF" # 0xFF: Default value for vehicle identification request message.
+                LogDbg(f"self.Vin = {self.Vin}")
 
                 LogTr("Exit cProtoVer.__init__()")
 
-        #Inverse protocol version.
-        #Pos = 1, Len = 1.
+        # Inverse protocol version.
+        # Pos = 1, Len = 1.
         class cInvProtoVer:
             def __init__(self):
                 LogTr("Enter cInvProtoVer.__init__()")
 
-                self.Rsv = ~0x00 & 0xFF #Reserved.
-                LogDbg("self.Rsv = 0x%02X" % self.Rsv)
-                self.v2010 = ~0x01 & 0xFF #0x01: DoIP ISO/DIS 13400-2:2010.
-                LogDbg("self.v2010 = 0x%02X" % self.v2010)
-                self.v2012 = ~0x02 & 0xFF #0x02: DoIP ISO 13400-2:2012.
-                LogDbg("self.v2012 = 0x%02X" % self.v2012)
-                self.Rsv = [~x & 0xFF for x in range(0x03, 0xFF)] #0x03...0xFE: reserved by this part of ISO 13400.
+                self.Rsv = "FF" #0xFF: Reserved.
                 LogDbg(f"self.Rsv = {self.Rsv}")
-                self.Vin = ~0xFF & 0xFF #0xFF: Default value for vehicle identification request message.
-                LogDbg("self.Vin = 0x%02X" % self.Vin)
+                self.v2010 = "FE" # 0xFE: DoIP ISO/DIS 13400-2:2010.
+                LogDbg(f"self.v2010 = {self.v2010}")
+                self.v2012 = "FD" # 0xFD: DoIP ISO 13400-2:2012.
+                LogDbg(f"self.v2012 = {self.v2012}")
+                self.Rsv = "01~FC" # 0x01~0xFC: reserved by this part of ISO 13400.
+                LogDbg(f"self.Rsv = {self.Rsv}")
+                self.Vin = "00" # 0x00: Default value for vehicle identification request message.
+                LogDbg(f"self.Vin = {self.Vin}")
 
                 LogTr("Exit cInvProtoVer.__init__()")
 
-        #Payload type(GH_PT).
-        #Pos = 2, Len = 2.
+        # Payload type(GH_PT).
+        # Pos = 2, Len = 2.
         class cPlTyp:
             def __init__(self):
                 LogTr("Enter cPlTyp.__init__()")
 
-                #Mandatory.
-                self.GenDoipHdrNegAck = 0x0000 #Generic DoIP header negative acknowledge.
-                LogDbg("self.GenDoipHdrNegAck = 0x%04X" % self.GenDoipHdrNegAck)
-                self.VehIdReqMsg = 0x0001 #Vehicle identification request message.
-                LogDbg("self.VehIdReqMsg = 0x%04X" % self.VehIdReqMsg)
+                # Mandatory.
+                self.GenDoipHdrNegAck = "0000" # 0x0000: Generic DoIP header negative acknowledge.
+                LogDbg(f"self.GenDoipHdrNegAck = {self.GenDoipHdrNegAck}")
+                self.VehIdReqMsg = "0001" # 0x0001: Vehicle identification request message.
+                LogDbg(f"self.VehIdReqMsg = {self.VehIdReqMsg}")
 
-                #Optional.
-                self.VehIdReqMsgEid = 0x0001 #Vehicle identification request message with EID.
-                LogDbg("self.VehIdReqMsgEid = 0x%04X" % self.VehIdReqMsgEid)
+                # Optional.
+                self.VehIdReqMsgEid = "0002" # 0x0002: Vehicle identification request message with EID.
+                LogDbg(f"self.VehIdReqMsgEid = {self.VehIdReqMsgEid}")
 
-                #Mandatory.
-                self.VehIdReqMsgWithVin = 0x0003 #Vehicle identification request message with VIN.
-                LogDbg("self.VehIdReqMsgWithVin = 0x%04X" % self.VehIdReqMsgWithVin)
-                self.VehAnncMsg = 0x0004 #Vehicle announcement message/vehicle identification response message.
-                LogDbg("self.VehAnncMsg = 0x%04X" % self.VehAnncMsg)
-                self.RteActReq = 0x0005 #Routing activation request.
-                LogDbg("self.RteActReq = 0x%04X" % self.RteActReq)
-                self.RteActResp = 0x0006 #Routing activation response.
-                LogDbg("self.RteActResp = 0x%04X" % self.RteActResp)
-                self.AlvChkReq = 0x0007 #Alive check request.
-                LogDbg("self.AlvChkReq = 0x%04X" % self.AlvChkReq)
-                self.AlvChkResp = 0x0008 #Alive check response.
-                LogDbg("self.AlvChkResp = 0x%04X" % self.AlvChkResp)
+                # Mandatory.
+                self.VehIdReqMsgWithVin = "0003" # 0x0003: Vehicle identification request message with VIN.
+                LogDbg(f"self.VehIdReqMsgWithVin = {self.VehIdReqMsgWithVin}")
+                self.VehAnncMsg = "0004" # 0x0004: Vehicle announcement message/vehicle identification response message.
+                LogDbg(f"self.VehAnncMsg = {self.VehAnncMsg}")
+                self.RteActReq = "0005" # 0x0005: Routing activation request.
+                LogDbg(f"self.RteActReq = {self.RteActReq}")
+                self.RteActResp = "0006" # 0x0006: Routing activation response.
+                LogDbg(f"self.RteActResp = {self.RteActResp}")
+                self.AlvChkReq = "0007" # 0x0007: Alive check request.
+                LogDbg(f"self.AlvChkReq = {self.AlvChkReq}")
+                self.AlvChkResp = "0008" # 0x0008: Alive check response.
+                LogDbg(f"self.AlvChkResp = {self.AlvChkResp}")
 
-                #Reserve.
-                self.IsoRsv = [x for x in range(0x0009, 0x4001)] #0x0009 to 0x4000. Reserved by this of ISO 13400.
-                LogDbg("self.IsoRsv = [0x0009, 0x4000]")
+                # Reserve.
+                self.IsoRsv = "0009~4000" # 0x0009~0x4000: Reserved by this of ISO 13400.
+                LogDbg(f"self.IsoRsv = {self.IsoRsv}")
 
-                #Optional.
-                self.DoipEntyStsReq = 0x4001 #DoIP entity status request.
-                LogDbg("self.DoipEntyStsReq = 0x%04X" % self.DoipEntyStsReq)
-                self.DoipEntyStsResp = 0x4002 #DoIP entity status response.
-                LogDbg("self.DoipEntyStsResp = 0x%04X" % self.DoipEntyStsResp)
+                # Optional.
+                self.DoipEntyStsReq = "4001" # 0x4001: DoIP entity status request.
+                LogDbg(f"self.DoipEntyStsReq = {self.DoipEntyStsReq}")
+                self.DoipEntyStsResp = "4002" # 0x4002: DoIP entity status response.
+                LogDbg(f"self.DoipEntyStsResp = {self.DoipEntyStsResp}")
 
-                #Mandatory.
-                self.DiagPwrMdInfoReq = 0x4003 #Diagnostic power mode information response.
-                LogDbg("self.DiagPwrMdInfoReq = 0x%04X" % self.DiagPwrMdInfoReq)
-                self.DiagPwrMdInfoResp = 0x4004 #Diagnostic power mode information request.
-                LogDbg("self.DiagPwrMdInfoResp = 0x%04X" % self.DiagPwrMdInfoResp)
+                # Mandatory.
+                self.DiagPwrMdInfoReq = "4003" # 0x4003: Diagnostic power mode information response.
+                LogDbg(f"self.DiagPwrMdInfoReq = {self.DiagPwrMdInfoReq}")
+                self.DiagPwrMdInfoResp = "4004" # 0x4004: Diagnostic power mode information request.
+                LogDbg(f"self.DiagPwrMdInfoResp = {self.DiagPwrMdInfoResp}")
 
-                #Reserve.
-                self.IsoRsv1 = [x for x in range(0x4005, 0x8001)] #0x4005 to 0x8000. Reserved by this of ISO 13400.
-                LogDbg("self.IsoRsv1 = [0x4005, 0x8000]")
+                # Reserve.
+                self.IsoRsv1 = "4005~8000" # 0x4005~0x8000: Reserved by this of ISO 13400.
+                LogDbg(f"self.IsoRsv1 = {self.IsoRsv1}")
 
-                #Mandatory.
-                self.DiagMsg = 0x8001 #Diagnostic message.
-                LogDbg("self.DiagMsg = 0x%04X" % self.DiagMsg)
-                self.DiagMsgPosAck = 0x8002 #Diagnostic message positive acknowledegment.
-                LogDbg("self.DiagMsgPosAck = 0x%04X" % self.DiagMsgPosAck)
-                self.DiagMsgNegAck = 0x8003  #Diagnostic message negative acknowledgement.
-                LogDbg("self.DiagMsgNegAck = 0x%04X" % self.DiagMsgNegAck)
+                # Mandatory.
+                self.DiagMsg = "8001" # 0x8001: Diagnostic message.
+                LogDbg(f"self.DiagMsg = {self.DiagMsg}")
+                self.DiagMsgPosAck = "8002" # 0x8002: Diagnostic message positive acknowledegment.
+                LogDbg(f"self.DiagMsgPosAck = {self.DiagMsgPosAck}")
+                self.DiagMsgNegAck = "8003" # 0x8003: Diagnostic message negative acknowledgement.
+                LogDbg(f"self.DiagMsgNegAck = {self.DiagMsgNegAck}")
 
-                #Reserve.
-                self.IsoRsv1 = [x for x in range(0x8004, 0xF000)] #0x8004 to 0xEFFF. Reserved by this of ISO 13400.
-                LogDbg("self.IsoRsv1 = [0x8004, 0xEFFF]")
+                # Reserve.
+                self.IsoRsv2 = "8004~EFFF" # 0x8004~0xEFFF: Reserved by this of ISO 13400.
+                LogDbg(f"self.IsoRsv2 = {self.IsoRsv2}")
 
-                #Optional.
-                self.MfrRsv = [x for x in range(0xF000, 0x10000)] #0xF000 to 0xFFFF. Reserved for manufacturer-specific use.
-                LogDbg("self.MfrRsv = [0xF000, 0xFFFF]")
+                # Optional.
+                self.MfrRsv = "F000~FFFF" # 0xF000~0xFFFF: Reserved for manufacturer-specific use.
+                LogDbg(f"self.MfrRsv = {self.MfrRsv}")
 
                 LogTr("Exit cPlTyp.__init__()")
 
@@ -139,21 +139,21 @@ class cMsgPset:
                 def __init__(self):
                     LogTr("Enter cActTyp.__init__()")
 
-                    #Mandatory.
-                    self.Dflt = 0x00 #Default.
-                    LogDbg("self.Dflt = 0x%02X" % self.Dflt)
-                    self.WwhObd = 0x01 #WWH-OBD.
-                    LogDbg("self.WwhObd = 0x%02X" % self.WwhObd)
+                    # Mandatory.
+                    self.Dflt = "00" # 0x00: Default.
+                    LogDbg(f"self.Dflt = {self.Dflt}")
+                    self.WwhObd = "01" # 0x01: WWH-OBD.
+                    LogDbg(f"self.WwhObd = {self.WwhObd}")
 
-                    #Reserve.
-                    self.IsoRsv = [x for x in range(0x02, 0xE0)] #0x02 to 0xDF. ISO/SAE reserved.
-                    LogDbg("self.IsoRsv = [0x02, 0xDF]")
+                    # Reserve.
+                    self.IsoRsv = "02~DF" # 0x02~0xDF: ISO/SAE reserved.
+                    LogDbg(f"self.IsoRsv = {self.IsoRsv}")
 
-                    #Optional.
-                    self.CntrlSec = 0xE0 #Central security.
-                    LogDbg("self.CntrlSec = 0x%02X" % self.CntrlSec)
-                    self.OemSpec = [x for x in range(0xE1, 0x100)] #0xE1 to 0xFF. Available for additional OEM-specific use.
-                    LogDbg("self.OemSpec = [0xE1, 0xFF]")
+                    # Optional.
+                    self.CntrlSec = "E0" # 0xE0: Central security.
+                    LogDbg(f"self.CntrlSec = {self.CntrlSec}")
+                    self.OemSpec = "E1~FF" # 0xE1~0xFF: Available for additional OEM-specific use.
+                    LogDbg(f"self.OemSpec = {self.OemSpec}")
 
                     LogTr("Exit cActTyp.__init__()")
 
@@ -161,8 +161,8 @@ class cMsgPset:
                 def __init__(self):
                     LogTr("Enter cActTyp.__init__()")
 
-                    self.Dflt = 0x00000000 #Default
-                    LogDbg("self.Dflt = 0x%08X" % self.Dflt)
+                    self.Dflt = "00000000" # 0x00000000: Default
+                    LogDbg(f"self.Dflt = {self.Dflt}")
 
                     LogTr("Exit cActTyp.__init__()")
 
@@ -179,53 +179,53 @@ class cMsgPset:
                 def __init__(self):
                     LogTr("Enter cRteActRespCode.__init__()")
 
-                    #Mandatory.
-                    self.UnKSrcAdr = 0x00 #Routine activation denied due to unknown source address.
-                    LogDbg("self.UnKSrcAdr = 0x%02X" % self.UnKSrcAdr)
-                    self.SockRegAct = 0x01 #Routine activation denied bacause all concurrently
-                                            #supported TCP_DATA socket are registered and active.
-                    LogDbg("self.SockRegAct = 0x%02X" % self.SockRegAct)
-                    self.SaDiffAlrAct = 0x02 #Routine activation denied because an SA different from the
-                                              #table connection entry was received on the already
-                                              #activated TCP_DATA socket.
-                    LogDbg("self.SaDiffAlrAct = 0x%02X" % self.SaDiffAlrAct)
-                    self.SaAlrRegActDiff = 0x03 #Routine activation denied because the SA is already
-                                                 #registered and active on a different TCP_DATA socket.
-                    LogDbg("self.SaAlrRegActDiff = 0x%02X" % self.SaAlrRegActDiff)
+                    # Mandatory.
+                    self.UnKSrcAdr = "00" # 0x00: Routine activation denied due to unknown source address.
+                    LogDbg(f"self.UnKSrcAdr = {self.UnKSrcAdr}")
+                    self.SockRegAct = "01" # 0x01: Routine activation denied bacause all concurrently
+                                           # supported TCP_DATA socket are registered and active.
+                    LogDbg(f"self.SockRegAct = {self.SockRegAct}")
+                    self.SaDiffAlrAct = "02" # 0x02: Routine activation denied because an SA different from the
+                                             # table connection entry was received on the already
+                                             # activated TCP_DATA socket.
+                    LogDbg(f"self.SaDiffAlrAct = {self.SaDiffAlrAct}")
+                    self.SaAlrRegActDiff = "03" # 0x03: Routine activation denied because the SA is already
+                                                # registered and active on a different TCP_DATA socket.
+                    LogDbg(f"self.SaAlrRegActDiff = {self.SaAlrRegActDiff}")
 
-                    #Optional.
-                    self.MisAuthn = 0x04 #Routine activation denied due to missing authentication.
-                    LogDbg("self.MisAuthn = 0x%02X" % self.MisAuthn)
-                    self.RejConf = 0x05 #Routine activation denied due to rejected confirmation.
-                    LogDbg("self.RejConf = 0x%02X" % self.RejConf)
+                    # Optional.
+                    self.MisAuthn = "04" # 0x04: Routine activation denied due to missing authentication.
+                    LogDbg(f"self.MisAuthn = {self.MisAuthn}")
+                    self.RejConf = "05" # 0x05: Routine activation denied due to rejected confirmation.
+                    LogDbg(f"self.RejConf = {self.RejConf}")
 
-                    #Mandatory.
-                    self.UnsptRteAct = 0x06 #Routine activation denied due to unsupported routing activation type.
-                    LogDbg("self.UnsptRteAct = 0x%02X" % self.UnsptRteAct)
+                    # Mandatory.
+                    self.UnsptRteAct = "06" # 0x06: Routine activation denied due to unsupported routing activation type.
+                    LogDbg(f"self.UnsptRteAct = {self.UnsptRteAct}")
 
-                    #Reserve.
-                    self.IsoRsv = [x for x in range(0x07, 0x10)] #0x07 to 0x0F. Reserved by this part of ISO 13400.
-                    LogDbg("self.IsoRsv = [0x07, 0x0F]")
+                    # Reserve.
+                    self.IsoRsv = "07~0F" # 0x07~0x0F: Reserved by this part of ISO 13400.
+                    LogDbg(f"self.IsoRsv = {self.IsoRsv}")
 
-                    #Mandatory.
-                    self.RteScsAct = 0x10 #Routing successfuly activated.
-                    LogDbg("self.RteScsAct = 0x%02X" % self.RteScsAct)
+                    # Mandatory.
+                    self.RteScsAct = "10" # 0x10: Routing successfuly activated.
+                    LogDbg(f"self.RteScsAct = {self.RteScsAct}")
 
-                    #Optional.
-                    self.RteWilAct = 0x11  #Routing will be activated; confirmation required.
-                    LogDbg("self.RteWilAct = 0x%02X" % self.RteWilAct)
+                    # Optional.
+                    self.RteWilAct = "11"  # 0x11: Routing will be activated; confirmation required.
+                    LogDbg(f"self.RteWilAct = {self.RteWilAct}")
 
-                    #Reserve.
-                    self.IsoRsv1 = [x for x in range(0x12, 0xE0)] #0x12 to 0xDF. Reserved by this part of ISO 13400.
-                    LogDbg("self.IsoRsv1 = [0x07, 0x0F]")
+                    # Reserve.
+                    self.IsoRsv1 = "12~DF" # 0x12~0xDF: Reserved by this part of ISO 13400.
+                    LogDbg(f"self.IsoRsv1 = {self.IsoRsv1}")
 
-                    #Optional.
-                    self.VehMfrSpec = [x for x in range(0xE0, 0xFF)] #0xE0 to 0xFE. Vehicle-manufacturer specific.
-                    LogDbg("self.VehMfrSpec = [0xE0, 0xFF]")
+                    # Optional.
+                    self.VehMfrSpec = "E0~FF" # 0xE0~0xFE: Vehicle-manufacturer specific.
+                    LogDbg(f"self.VehMfrSpec = {self.VehMfrSpec}")
 
-                    #Reserve.
-                    self.IsoRsv2 = 0xFF #Reserved by this part of ISO 13400.
-                    LogDbg("self.IsoRsv2 = 0x%02X" % self.IsoRsv2)
+                    # Reserve.
+                    self.IsoRsv2 = "FF" # 0xFF: Reserved by this part of ISO 13400.
+                    LogDbg(f"self.IsoRsv2 = {self.IsoRsv2}")
 
                     LogTr("Exit cRteActRespCode.__init__()")
 
@@ -233,8 +233,8 @@ class cMsgPset:
                 def __init__(self):
                     LogTr("Enter cRteActRespCode.__init__()")
 
-                    self.Dflt = 0x00000000 #Default
-                    LogDbg("self.Dflt = 0x%08X" % self.Dflt)
+                    self.Dflt = "00000000" # 0x00000000: Default
+                    LogDbg(f"self.Dflt = {self.Dflt}")
 
                     LogTr("Exit cRteActRespCode.__init__()")
 
@@ -251,15 +251,15 @@ class cMsgPset:
                 def __init__(self):
                     LogTr("Enter cPosAckCode.__init__()")
 
-                    #Mandatory.
-                    self.RteCor = 0x00 #Routing confirmation acknowledge (ACK) message indicating that
-                                       #the diagnostic message was correctly received, processed and put
-                                       #into the transmission buffer of the destination network.
-                    LogDbg("self.RteCor = 0x%02X" % self.RteCor)
+                    # Mandatory.
+                    self.RteCor = "00" # 0x00: Routing confirmation acknowledge (ACK) message indicating that
+                                       # the diagnostic message was correctly received, processed and put
+                                       # into the transmission buffer of the destination network.
+                    LogDbg(f"self.RteCor = {self.RteCor}")
 
-                    #Reserve.
-                    self.IsoRsv = [x for x in range(0x01, 0x100)] #0x01 to 0xFF. Reserved by this part of ISO 13400.
-                    LogDbg("self.IsoRsv = [0x01, 0xFF]")
+                    # Reserve.
+                    self.IsoRsv = "01~FF" # 0x01~0xFF: Reserved by this part of ISO 13400.
+                    LogDbg(f"self.IsoRsv = {self.IsoRsv}")
 
                     LogTr("Exit cPosAckCode.__init__()")
 
@@ -267,31 +267,31 @@ class cMsgPset:
                 def __init__(self):
                     LogTr("Enter cNegAckCode.__init__()")
 
-                    #Reserve.
-                    self.IsoRsv = [x for x in range(0x00, 0x02)] #0x00 to 0x01. Reserved by this part of ISO 13400.
-                    LogDbg("self.IsoRsv = [0x00, 0x01]")
+                    # Reserve.
+                    self.IsoRsv = "00~01" # 0x00~0x01: Reserved by this part of ISO 13400.
+                    LogDbg(f"self.IsoRsv = {self.IsoRsv}")
 
-                    #Mandatory.
-                    self.InvSrcAdr = 0x02 #Invalid source address.
-                    LogDbg("self.InvSrcAdr = 0x%02X" % self.InvSrcAdr)
-                    self.UnkTgtAdr = 0x03 #Unknown target address.
-                    LogDbg("self.UnkTgtAdr = 0x%02X" % self.UnkTgtAdr)
-                    self.DiagMsgLrg = 0x04 #Diagnostic message too large.
-                    LogDbg("self.DiagMsgLrg = 0x%02X" % self.DiagMsgLrg)
-                    self.OtMem = 0x05 #Out of memory.
-                    LogDbg("self.OtMem = 0x%02X" % self.OtMem)
+                    # Mandatory.
+                    self.InvSrcAdr = "02" # 0x02: Invalid source address.
+                    LogDbg(f"self.InvSrcAdr = {self.InvSrcAdr}")
+                    self.UnkTgtAdr = "03" # 0x03: Unknown target address.
+                    LogDbg(f"self.UnkTgtAdr = {self.UnkTgtAdr}")
+                    self.DiagMsgLrg = "04" # 0x04: Diagnostic message too large.
+                    LogDbg(f"self.DiagMsgLrg = {self.DiagMsgLrg}")
+                    self.OtMem = "05" # 0x05: Out of memory.
+                    LogDbg(f"self.OtMem = {self.OtMem}")
 
-                    #Optional.
-                    self.TgtUnreach = 0x06 #Target unreachable.
-                    LogDbg("self.TgtUnreach = 0x%02X" % self.TgtUnreach)
-                    self.UnkNet = 0x07 #Unknown network.
-                    LogDbg("self.UnkNet = 0x%02X" % self.UnkNet)
-                    self.TransProtoErr = 0x08 #Transport protocol error.
-                    LogDbg("self.TransProtoErr = 0x%02X" % self.TransProtoErr)
+                    # Optional.
+                    self.TgtUnreach = "06" # 0x06: Target unreachable.
+                    LogDbg(f"self.TgtUnreach = {self.TgtUnreach}")
+                    self.UnkNet = "07" # 0x07: Unknown network.
+                    LogDbg(f"self.UnkNet = {self.UnkNet}")
+                    self.TransProtoErr = "08" # 0x08: Transport protocol error.
+                    LogDbg(f"self.TransProtoErr = {self.TransProtoErr}")
 
-                    #Reserve.
-                    self.IsoRsv1 = [x for x in range(0x09, 0x100)] #0x09 to 0xFF. Reserved by this part of ISO 13400.
-                    LogDbg("self.IsoRsv1 = [0x09, 0xFF]")
+                    # Reserve.
+                    self.IsoRsv1 = "09~FF" # 0x09~0xFF: Reserved by this part of ISO 13400.
+                    LogDbg(f"self.IsoRsv1 = {self.IsoRsv1}")
 
                     LogTr("Exit cNegAckCode.__init__()")
 
@@ -321,8 +321,8 @@ class cMsgPset:
         LogTr("Exit cMsgPset.__init__()")
 
 class cMsg:
-    #ISO 13400-2-2012.
-    #Doip message structure.
+    # ISO 13400-2-2012.
+    # Doip message structure.
 
     class cHdr:
         def __init__(self):
@@ -335,16 +335,13 @@ class cMsg:
         def AssemHdr(self, ProtoVer, PlTyp, PlLen):
             LogTr("Enter cHdr.AssemHdr()")
 
-            LogDbg("ProtoVer = 0x%02X" % ProtoVer)
-            InvProtoVer = (~ProtoVer & 0xFF)
-            LogDbg("InvProtoVer = 0x%02X" % InvProtoVer)
-            LogDbg("PlTyp = 0x%04X" % PlTyp)
+            LogDbg(f"ProtoVer = {ProtoVer}")
+            LogDbg(f"PlTyp = {PlTyp}")
             LogDbg(f"PlLen = {PlLen}")
 
-            Hdr = "%02X" % ProtoVer +\
-                  "%02X" % InvProtoVer +\
-                  "%04X" % PlTyp +\
-                  "%08X" % PlLen
+            InvProtoVer = "%02X" % (~int(ProtoVer, 16) & 0xFF)
+            LogDbg(f"InvProtoVer = {InvProtoVer}")
+            Hdr = ProtoVer + InvProtoVer + PlTyp + PlLen
             LogDbg(f"Hdr = {Hdr}")
 
             LogTr("Exit cHdr.AssemHdr()")
@@ -356,13 +353,13 @@ class cMsg:
 
             LogDbg(f"Hdr = {Hdr}")
 
-            ProtoVer = int(Hdr[0:2], 16)
-            LogDbg("ProtoVer = 0x%02X" % ProtoVer)
-            InvProtoVer = int(Hdr[2:4], 16)
-            LogDbg("InvProtoVer = 0x%02X" % InvProtoVer)
-            PlTyp = int(Hdr[4:8], 16)
-            LogDbg("PlTyp = 0x%04X" % PlTyp)
-            PlLen = int(Hdr[8:16], 16)
+            ProtoVer = Hdr[0:2]
+            LogDbg(f"ProtoVer = {ProtoVer}")
+            InvProtoVer = Hdr[2:4]
+            LogDbg(f"InvProtoVer = {InvProtoVer}")
+            PlTyp = Hdr[4:8]
+            LogDbg(f"PlTyp = {PlTyp}")
+            PlLen = Hdr[8:16]
             LogDbg(f"PlLen = {PlLen}")
 
             LogTr("Exit cHdr.PrsHdr()")
@@ -377,50 +374,43 @@ class cMsg:
 
             LogTr("Exit cPl.__init__()")
 
-        def AssemPlRteActReq(self, SrcAdr, ActTyp, Rsv, OemSpec = None):
+        def AssemPlRteActReq(self, SrcAdr, ActTyp, Rsv, OemSpec = ""):
             LogTr("Enter cPl.AssemPlRteActReq()")
 
-            #External test equipment address information.
-            #Mandatory.
-            LogDbg("SrcAdr = 0x%04X" % SrcAdr)
-            LogDbg("ActTyp = 0x%02X" % ActTyp)
-            LogDbg("Rsv = 0x%08X" % Rsv)
+            # External test equipment address information.
+            # Mandatory.
+            LogDbg(f"SrcAdr = {SrcAdr}")
+            LogDbg(f"ActTyp = {ActTyp}")
+            LogDbg(f"Rsv = {Rsv}")
 
-            #Reserved and OEM specific data.
-            #Optional.
-            LogDbg("OemSpec = " + "" if OemSpec == None else "%08X" % OemSpec)
+            # Reserved and OEM specific data.
+            # Optional.
+            LogDbg(f"OemSpec = {OemSpec}")
 
-            Pl = "%04X" % SrcAdr +\
-                  "%02X" % ActTyp +\
-                  "%08X" % Rsv +\
-                  "" if OemSpec == None else "%08X" % OemSpec
+            Pl = SrcAdr + ActTyp + Rsv + OemSpec
             LogDbg(f"Pl = {Pl}")
 
             LogTr("Exit cPl.AssemPlRteActReq()")
 
             return Pl
 
-        def AssemPlRteActResp(self, TstrLgAdr, EntyLgAdr, RteActRespCode, Rsv, OemSpec = None):
+        def AssemPlRteActResp(self, TstrLgAdr, EntyLgAdr, RteActRespCode, Rsv, OemSpec = ""):
             LogTr("Enter cPl.AssemPlRteActResp()")
 
-            #External test equipment address information.
-            #Mandatory.
-            LogDbg("TstrLgAdr = 0x%04X" % TstrLgAdr)
+            # External test equipment address information.
+            # Mandatory.
+            LogDbg(f"TstrLgAdr = {TstrLgAdr}")
 
-            #Routing activation status information.
-            #Mandatory.
-            LogDbg("EntyLgAdr = 0x%04X" % EntyLgAdr)
-            LogDbg("RteActRespCode = 0x%02X" % RteActRespCode)
-            LogDbg("Rsv = 0x%08X" % Rsv)
+            # Routing activation status information.
+            # Mandatory.
+            LogDbg(f"EntyLgAdr = {EntyLgAdr}")
+            LogDbg(f"RteActRespCode = {RteActRespCode}")
+            LogDbg(f"Rsv = {Rsv}")
 
-            #Optional.
-            LogDbg("OemSpec = " + "" if OemSpec == None else "%08X" % OemSpec)
+            # Optional.
+            LogDbg(f"OemSpec = {OemSpec}")
 
-            Pl = "%04X" % TstrLgAdr +\
-                 "%04X" % EntyLgAdr +\
-                 "%02X" % RteActRespCode +\
-                 "%08X" % Rsv +\
-                  "" if OemSpec == None else "%08X" % OemSpec
+            Pl = TstrLgAdr + EntyLgAdr + RteActRespCode + Rsv + OemSpec
             LogTr(f"Pl = {Pl}")
 
             LogTr("Exit cPl.AssemPlRteActResp()")
@@ -432,19 +422,19 @@ class cMsg:
 
             LogDbg(f"Pl = {Pl}")
 
-            #External test equipment address information.
-            #Mandatory.
-            SrcAdr = int(Pl[0:4], 16)
-            LogDbg("SrcAdr = 0x%04X" % SrcAdr)
-            ActTyp = int(Pl[4:6], 16)
-            LogDbg("ActTyp = 0x%02X" % ActTyp)
-            Rsv = int(Pl[6:14], 16)
-            LogDbg("Rsv = 0x%08X" % Rsv)
+            # External test equipment address information.
+            # Mandatory.
+            SrcAdr = Pl[0:4]
+            LogDbg(f"SrcAdr = {SrcAdr}")
+            ActTyp = Pl[4:6]
+            LogDbg(f"ActTyp = {ActTyp}")
+            Rsv = Pl[6:14]
+            LogDbg(f"Rsv = {Rsv}")
 
-            #Reserved and OEM specific data.
-            #Optional.
-            OemSpec = None if Pl[14:22] == "" else "%08X" % int(Pl[14:22], 16)
-            LogDbg("OemSpec = " + "" if OemSpec == None else "%08X" % OemSpec)
+            # Reserved and OEM specific data.
+            # Optional.
+            OemSpec = Pl[14:22]
+            LogDbg(f"OemSpec = {OemSpec}")
 
             LogTr("Exit cPl.PrsPlRteActReq()")
 
@@ -455,23 +445,23 @@ class cMsg:
 
             LogDbg(f"Pl = {Pl}")
 
-            #External test equipment address information.
-            #Mandatory.
-            TstrLgAdr = int(Pl[0:4], 16)
-            LogDbg("TstrLgAdr = 0x%04X" % TstrLgAdr)
+            # External test equipment address information.
+            # Mandatory.
+            TstrLgAdr = Pl[0:4]
+            LogDbg(f"TstrLgAdr = {TstrLgAdr}")
 
-            #Routing activation status information.
-            #Mandatory.
-            EntyLgAdr = int(Pl[4:8], 16)
-            LogDbg("EntyLgAdr = 0x%04X" % EntyLgAdr)
-            RteActRespCode = int(Pl[8:10], 16)
-            LogDbg("RteActRespCode = 0x%02X" % RteActRespCode)
-            Rsv = int(Pl[10:18], 16)
-            LogDbg("Rsv = 0x%08X" % Rsv)
+            # Routing activation status information.
+            # Mandatory.
+            EntyLgAdr = Pl[4:8]
+            LogDbg(f"EntyLgAdr = {EntyLgAdr}")
+            RteActRespCode = Pl[8:10]
+            LogDbg(f"RteActRespCode = {RteActRespCode}")
+            Rsv = Pl[10:18]
+            LogDbg(f"Rsv = {Rsv}")
 
-            #Optional.
-            OemSpec = None if Pl[18:26] == "" else "%08X" % int(Pl[18:26], 16)
-            LogDbg("OemSpec = " + "" if OemSpec == None else "%08X" % OemSpec)
+            # Optional.
+            OemSpec = Pl[18:26]
+            LogDbg(f"OemSpec = {OemSpec}")
 
             LogTr("Exit cPl.PrsPlRteActResp()")
 
@@ -480,18 +470,16 @@ class cMsg:
         def AssemPlDiag(self, SrcAdr, TgtAdr, UsrDat):
             LogTr("Enter cPl.AssemPlDiag()")
 
-            #Logical address information.
-            #Mandatory.
-            LogDbg("SrcAdr = 0x%04X" % SrcAdr)
-            LogDbg("TgtAdr = 0x%04X" % TgtAdr)
+            # Logical address information.
+            # Mandatory.
+            LogDbg(f"SrcAdr = {SrcAdr}")
+            LogDbg(f"TgtAdr = {TgtAdr}")
 
-            #Diagnostic message data.
-            #Mandatory.
+            # Diagnostic message data.
+            # Mandatory.
             LogDbg(f"UsrDat = {UsrDat}")
 
-            Pl = "%04X" % SrcAdr +\
-                 "%04X" % TgtAdr +\
-                 UsrDat
+            Pl = SrcAdr + TgtAdr + UsrDat
             LogDbg(f"Pl = {Pl}")
 
             LogTr("Exit cPl.AssemPlDiag()")
@@ -501,15 +489,15 @@ class cMsg:
         def PrsPlDiag(self, Pl):
             LogTr("Enter cPl.PrsPlDiag()")
 
-            #Logical address information.
-            #Mandatory.
-            SrcAdr = int(Pl[0:4], 16)
-            LogDbg("SrcAdr = 0x%04X" % SrcAdr)
-            TgtAdr = int(Pl[4:8], 16)
-            LogDbg("TgtAdr = 0x%04X" % TgtAdr)
+            # Logical address information.
+            # Mandatory.
+            SrcAdr = Pl[0:4]
+            LogDbg(f"SrcAdr = {SrcAdr}")
+            TgtAdr = Pl[4:8]
+            LogDbg(f"TgtAdr = {TgtAdr}")
 
-            #Diagnostic message data.
-            #Mandatory.
+            # Diagnostic message data.
+            # Mandatory.
             UsrDat = Pl[8:]
             LogDbg("UsrDat = {UsrDat}")
 
@@ -520,20 +508,20 @@ class cMsg:
         def PrsPlPosDiag(self, Pl):
             LogTr("Enter cPl.PrsPlPosDiag()")
 
-            #Logical address information.
-            #Mandatory.
-            SrcAdr = int(Pl[0:4], 16)
-            LogDbg("SrcAdr = 0x%04X" % SrcAdr)
-            TgtAdr = int(Pl[4:8], 16)
-            LogDbg("TgtAdr = 0x%04X" % TgtAdr)
+            # Logical address information.
+            # Mandatory.
+            SrcAdr = Pl[0:4]
+            LogDbg(f"SrcAdr = {SrcAdr}")
+            TgtAdr = Pl[4:8]
+            LogDbg(f"TgtAdr = {TgtAdr}")
 
-            #Diagnostic message acknowledge information.
-            #Mandatory.
-            AckCode = int(Pl[8:10], 16)
-            LogDbg("AckCode = 0x%02X" % AckCode)
+            # Diagnostic message acknowledge information.
+            # Mandatory.
+            AckCode = Pl[8:10]
+            LogDbg(f"AckCode = {AckCode}")
 
-            #Optional.
-            DiagMsg = None if Pl[10:] == "" else Pl[10:]
+            # Optional.
+            DiagMsg = Pl[10:]
             LogDbg(f"DiagMsg = {DiagMsg}")
 
             LogTr("Exit cPl.PrsPlPosDiag()")
@@ -543,20 +531,20 @@ class cMsg:
         def PrsPlNegDiag(self, Pl):
             LogTr("Enter cPl.PrsPlNegDiag()")
 
-            #Logical address information.
-            #Mandatory.
-            SrcAdr = int(Pl[0:4], 16)
-            LogDbg("SrcAdr = 0x%04X" % SrcAdr)
-            TgtAdr = int(Pl[4:8], 16)
-            LogDbg("TgtAdr = 0x%04X" % TgtAdr)
+            # Logical address information.
+            # Mandatory.
+            SrcAdr = Pl[0:4]
+            LogDbg(f"SrcAdr = {SrcAdr}")
+            TgtAdr = Pl[4:8]
+            LogDbg(f"TgtAdr = {TgtAdr}")
 
-            #Diagnostic message acknowledge information.
-            #Mandatory.
-            NackCode = int(Pl[8:10], 16)
-            LogDbg("NackCode = 0x%02X" % NackCode)
+            # Diagnostic message acknowledge information.
+            # Mandatory.
+            NackCode = Pl[8:10]
+            LogDbg(f"NackCode = {NackCode}")
 
-            #Optional.
-            DiagMsg = None if Pl[10:] == "" else Pl[10:]
+            # Optional.
+            DiagMsg = Pl[10:]
             LogDbg(f"DiagMsg = {DiagMsg}")
 
             LogTr("Exit cPl.PrsPlNegDiag()")
@@ -599,20 +587,25 @@ class cMsg:
         return Hdr, Pl
 
 class cDoipSer:
-    def __init__(self, SrcIpAdr = "127.0.0.1", SrcPt = 13400, SrcAdr = 0x1000, FunSrcAdr = 0xE000):
+    def __init__(self, SrcIpAdr = "127.0.0.1", SrcPt = 13400, SrcAdr = "1000", FunSrcAdr = "E000"):
         LogTr("Enter cDoipSer.__init__()")
+
+        LogDbg(f"SrcIpAdr = {SrcIpAdr}")
+        LogDbg(f"SrcPt = {SrcIpAdr}")
+        LogDbg(f"SrcAdr = {SrcAdr}")
+        LogDbg(f"FunSrcAdr = {FunSrcAdr}")
 
         self.SrcIpAdr = SrcIpAdr
         LogDbg(f"self.SrcIpAdr = {self.SrcIpAdr}")
         self.SrcPt = SrcPt
         LogDbg(f"self.SrcPt = {self.SrcPt}")
         self.SrcAdr = SrcAdr
-        LogDbg("self.SrcAdr = 0x%04X" % self.SrcAdr)
+        LogDbg(f"self.SrcAdr = {SrcAdr}")
         self.FunSrcAdr = FunSrcAdr
-        LogDbg("self.FunSrcAdr = 0x%04X" % self.FunSrcAdr)
-        self.TgtAdr = None
+        LogDbg(f"self.FunSrcAdr = {FunSrcAdr}")
+        self.TgtAdr = ""
         LogDbg(f"self.TgtAdr = {self.TgtAdr}")
-        self.ConnSta = False #Connect status. True: connected, False: not connected.
+        self.ConnSta = False # Connect status. True: connected, False: not connected.
         LogDbg(f"self.ConnSta = {self.ConnSta}")
         self.Msg = cMsg()
         self.MsgPset = cMsgPset()
@@ -666,7 +659,7 @@ class cDoipSer:
         return Msg
 
     def IsRecvBufMty(self):
-        #LogTr("Enter cDoipSer.IsRecvBufMty()")
+        # LogTr("Enter cDoipSer.IsRecvBufMty()")
 
         if self.ConnSta == True:
             RecvBufSta = self.TcpSer.IsRecvBufMty()
@@ -674,7 +667,7 @@ class cDoipSer:
             RecvBufSta = None
             LogErr("Socket not connected.")
 
-        #LogTr("Exit cDoipSer.IsRecvBufMty()")
+        # LogTr("Exit cDoipSer.IsRecvBufMty()")
 
         return RecvBufSta
 
@@ -688,7 +681,7 @@ class cDoipSer:
         LogDbg(f"Pl = {Pl}")
         Hdr = self.Msg.Hdr.AssemHdr(self.MsgPset.Hdr.ProtoVer.v2012,
                                     self.MsgPset.Hdr.PlTyp.RteActResp,
-                                    len(Pl) // 2)
+                                    "%08X" % (len(Pl) // 2))
         LogDbg(f"Hdr = {Hdr}")
         SndMsg = self.Msg.AssemMsg(Hdr, Pl)
         LogDbg(f"SndMsg = {SndMsg}")
@@ -703,7 +696,7 @@ class cDoipSer:
         LogDbg(f"Pl = {Pl}")
         Hdr = self.Msg.Hdr.AssemHdr(self.MsgPset.Hdr.ProtoVer.v2012,
                                     self.MsgPset.Hdr.PlTyp.DiagMsgPosAck,
-                                    len(Pl) // 2)
+                                    "%08X" % (len(Pl) // 2))
         LogDbg(f"Hdr = {Hdr}")
         SndMsg = self.Msg.AssemMsg(Hdr, Pl)
         LogDbg(f"SndMsg = {SndMsg}")
@@ -718,7 +711,7 @@ class cDoipSer:
         LogDbg(f"Pl = {Pl}")
         Hdr = self.Msg.Hdr.AssemHdr(self.MsgPset.Hdr.ProtoVer.v2012,
                                     self.MsgPset.Hdr.PlTyp.DiagMsgNegAck,
-                                    len(Pl) // 2)
+                                    "%08X" % (len(Pl) // 2))
         LogDbg(f"Hdr = {Hdr}")
         SndMsg = self.Msg.AssemMsg(Hdr, Pl)
         LogDbg(f"SndMsg = {SndMsg}")
@@ -727,8 +720,15 @@ class cDoipSer:
         LogTr("Exit cDoipSer.NegAckDiagMsg()")
 
 class cDoipClt:
-    def __init__(self, SrcIpAdr = "127.0.0.1", TgtIpAdr = "127.0.0.1", SrcPt = 9999, TgtPt = 13400, SrcAdr = 0x0E00, TgtAdr = 0x1000, FunTgtAdr = 0xE000):
+    def __init__(self, SrcIpAdr = "127.0.0.1", TgtIpAdr = "127.0.0.1", SrcPt = 9999, TgtPt = 13400, SrcAdr = "0E00", TgtAdr = "1000", FunTgtAdr = "E000"):
         LogTr("Enter cDoipClt.__init__()")
+
+        LogDbg(f"SrcIpAdr = {SrcIpAdr}")
+        LogDbg(f"TgtIpAdr = {TgtIpAdr}")
+        LogDbg(f"SrcPt = {TgtPt}")
+        LogDbg(f"SrcAdr = {SrcAdr}")
+        LogDbg(f"TgtAdr = {TgtAdr}")
+        LogDbg(f"FunTgtAdr = {FunTgtAdr}")
 
         self.SrcIpAdr = SrcIpAdr
         LogDbg(f"self.SrcIpAdr = {self.SrcIpAdr}")
@@ -739,12 +739,12 @@ class cDoipClt:
         self.TgtPt = TgtPt
         LogDbg(f"self.TgtPt = {self.TgtPt}")
         self.SrcAdr = SrcAdr
-        LogDbg("self.SrcAdr = 0x%04X" % self.SrcAdr)
+        LogDbg(f"self.SrcAdr = {SrcAdr}")
         self.TgtAdr = TgtAdr
-        LogDbg("self.TgtAdr = 0x%04X" % self.TgtAdr)
+        LogDbg(f"self.TgtAdr = {self.TgtAdr}")
         self.FunTgtAdr = FunTgtAdr
-        LogDbg("self.FunTgtAdr = 0x%04X" % self.FunTgtAdr)
-        self.ConnSta = False #Connect status. True: connected, False: not connected.
+        LogDbg(f"self.FunTgtAdr = {self.FunTgtAdr}")
+        self.ConnSta = False # Connect status. True: connected, False: not connected.
         LogDbg(f"self.ConnSta = {self.ConnSta}")
         self.Msg = cMsg()
         self.MsgPset = cMsgPset()
@@ -824,7 +824,7 @@ class cDoipClt:
         LogDbg(f"Pl = {Pl}")
         Hdr = self.Msg.Hdr.AssemHdr(self.MsgPset.Hdr.ProtoVer.v2012,
                                     self.MsgPset.Hdr.PlTyp.RteActReq,
-                                    len(Pl) // 2)
+                                    "%08X" % (len(Pl) // 2))
         LogDbg(f"Hdr = {Hdr}")
         SndMsg = self.Msg.AssemMsg(Hdr, Pl)
         LogDbg(f"SndMsg = {SndMsg}")
@@ -841,15 +841,16 @@ class cDoipClt:
         LogDbg(f"Hdr = {Hdr}")
         LogDbg(f"Pl = {Pl}")
         ProtoVer, InvProtoVer, PlTyp, PlLen = self.Msg.Hdr.PrsHdr(Hdr)
-        LogDbg("ProtoVer = 0x%02X" % ProtoVer)
-        LogDbg("InvProtoVer = 0x%02X" % InvProtoVer)
-        LogDbg("PlTyp = 0x%04X" % PlTyp)
+        LogDbg(f"ProtoVer = {ProtoVer}")
+        LogDbg(f"InvProtoVer = {InvProtoVer}")
+        LogDbg(f"PlTyp = {PlTyp}")
         LogDbg(f"PlLen = {PlLen}")
         TstrLgAdr, EntyLgAdr, RteActRespCode, Rsv, OemSpec = self.Msg.Pl.PrsPlRteActResp(Pl)
-        LogDbg("TstrLgAdr = 0x%04X" % TstrLgAdr)
-        LogDbg("EntyLgAdr = 0x%04X" % EntyLgAdr)
-        LogDbg("RteActRespCode = 0x%02X" % RteActRespCode)
-        LogDbg("Rsv = 0x%08X" % Rsv)
+        LogDbg(f"TstrLgAdr = {TstrLgAdr}")
+        LogDbg(f"EntyLgAdr = {EntyLgAdr}")
+        LogDbg(f"RteActRespCode = {RteActRespCode}")
+        LogDbg(f"Rsv = {Rsv}")
+        LogDbg(f"OemSpec = {OemSpec}")
 
         if RteActRespCode == self.MsgPset.Pl.RteActResp.RteActRespCode.RteScsAct:
             LogTr("Route activation succeeded.")
@@ -869,7 +870,7 @@ class cDoipClt:
         LogDbg(f"Pl = {Pl}")
         Hdr = self.Msg.Hdr.AssemHdr(self.MsgPset.Hdr.ProtoVer.v2012,
                                     self.MsgPset.Hdr.PlTyp.DiagMsg,
-                                    len(Pl) // 2)
+                                    "%08X" % (len(Pl) // 2))
         LogDbg(f"Hdr = {Hdr}")
         SndMsg = self.Msg.AssemMsg(Hdr, Pl)
         LogDbg(f"SndMsg = {SndMsg}")
@@ -886,15 +887,15 @@ class cDoipClt:
         LogDbg(f"Hdr = {Hdr}")
         LogDbg(f"Pl = {Pl}")
         ProtoVer, InvProtoVer, PlTyp, PlLen = self.Msg.Hdr.PrsHdr(Hdr)
-        LogDbg("ProtoVer = 0x%02X" % ProtoVer)
-        LogDbg("InvProtoVer = 0x%02X" % InvProtoVer)
-        LogDbg("PlTyp = 0x%04X" % PlTyp)
+        LogDbg(f"ProtoVer = {ProtoVer}")
+        LogDbg(f"InvProtoVer = {InvProtoVer}")
+        LogDbg(f"PlTyp = {PlTyp}")
         LogDbg(f"PlLen = {PlLen}")
         SrcAdr, TgtAdr, AckCode, DiagMsg = self.Msg.Pl.PrsPlPosDiag(Pl)
-        LogDbg("SrcAdr = 0x%04X" % SrcAdr)
-        LogDbg("TgtAdr = 0x%04X" % TgtAdr)
-        LogDbg("AckCode = 0x%02X" % AckCode)
-        LogDbg("DiagMsg = " + "" if DiagMsg == None else DiagMsg)
+        LogDbg(f"SrcAdr = {SrcAdr}")
+        LogDbg(f"TgtAdr = {TgtAdr}")
+        LogDbg(f"AckCode = {AckCode}")
+        LogDbg(f"DiagMsg = {DiagMsg}")
 
         if PlTyp == self.MsgPset.Hdr.PlTyp.DiagMsgPosAck:
             LogTr("Diagnostic normal response.")
@@ -906,7 +907,7 @@ class cDoipClt:
         return PlTyp, AckCode
 
     def IsRecvBufMty(self):
-        #LogTr("Enter cDoipClt.IsRecvBufMty()")
+        # LogTr("Enter cDoipClt.IsRecvBufMty()")
 
         if self.ConnSta == True:
             Rtn = self.TcpClt.IsRecvBufMty()
@@ -914,7 +915,7 @@ class cDoipClt:
             Rtn = None
             LogErr("Socket not connected.")
 
-        #LogTr("Exit cDoipClt.IsRecvBufMty()")
+        # LogTr("Exit cDoipClt.IsRecvBufMty()")
 
         return Rtn
 
@@ -935,27 +936,27 @@ def ImitEcu():
                 LogDbg(f"Pl = {Pl}")
 
                 ProtoVer, InvProtoVer, PlTyp, PlLen = Ecu.Msg.Hdr.PrsHdr(Hdr)
-                LogDbg("ProtoVer = 0x%02X" % ProtoVer)
-                LogDbg("InvProtoVer = 0x%02X" % InvProtoVer)
-                LogDbg("PlTyp = 0x%04X" % PlTyp)
+                LogDbg(f"ProtoVer = {ProtoVer}")
+                LogDbg(f"InvProtoVer = {InvProtoVer}")
+                LogDbg(f"PlTyp = {PlTyp}")
                 LogDbg(f"PlLen = {PlLen}")
 
                 if PlTyp == Ecu.MsgPset.Hdr.PlTyp.RteActReq:
                     LogTr("Routing activation request.")
                     SrcAdr, ActTyp, Rsv, OemSpec = Ecu.Msg.Pl.PrsPlRteActReq(Pl)
-                    LogDbg("SrcAdr = 0x%04X" % SrcAdr)
-                    LogDbg("ActTyp = 0x%02X" % ActTyp)
-                    LogDbg("Rsv = 0x%08X" % Rsv)
-                    LogDbg("OemSpec = " + "" if OemSpec == None else "%08X" % OemSpec)
+                    LogDbg(f"SrcAdr = {SrcAdr}")
+                    LogDbg(f"ActTyp = {ActTyp}")
+                    LogDbg(f"Rsv = {Rsv}")
+                    LogDbg(f"OemSpec = {OemSpec}")
                     Ecu.TgtAdr = SrcAdr
-                    LogDbg("Ecu.TgtAdr = 0x%04X" % Ecu.TgtAdr)
+                    LogDbg(f"Ecu.TgtAdr = {Ecu.TgtAdr}")
 
                     Ecu.RespRteAct()
                 elif PlTyp == Ecu.MsgPset.Hdr.PlTyp.DiagMsg:
                     LogTr("Diagnostic message.")
                     SrcAdr, TgtAdr, AckCode, DiagMsg = Ecu.Msg.Pl.PrsPlDiag(Pl)
-                    LogDbg("SrcAdr = 0x%04X" % SrcAdr)
-                    LogDbg("TgtAdr = 0x%04X" % TgtAdr)
+                    LogDbg(f"SrcAdr = {SrcAdr}")
+                    LogDbg(f"TgtAdr = {TgtAdr}")
                     LogDbg(f"UsrDat = {UsrDat}")
 
                     Ecu.PosAckDiagMsg("00")
