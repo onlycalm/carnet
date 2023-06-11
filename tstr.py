@@ -27,8 +27,8 @@ class cTstr:
 
             self.Doip.ReqRteAct()
             PlTyp, RteActRespCode = self.Doip.RespRteAct()
-            LogDbg("PlTyp = 0x%04X" % PlTyp)
-            LogDbg("RteActRespCode = 0x%04X" % RteActRespCode)
+            LogDbg(f"PlTyp = {PlTyp}")
+            LogDbg(f"RteActRespCode = {RteActRespCode}")
             self.Doip.ReqDiag("1003")
             self.Doip.RespDiag()
 

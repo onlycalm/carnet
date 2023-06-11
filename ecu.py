@@ -34,29 +34,29 @@ class cEcu:
                 LogDbg(f"Pl = {Pl}")
 
                 ProtoVer, InvProtoVer, PlTyp, PlLen = self.Doip.Msg.Hdr.PrsHdr(Hdr)
-                LogDbg("ProtoVer = 0x%02X" % ProtoVer)
-                LogDbg("InvProtoVer = 0x%02X" % InvProtoVer)
-                LogDbg("PlTyp = 0x%04X" % PlTyp)
+                LogDbg(f"ProtoVer = {ProtoVer}")
+                LogDbg(f"InvProtoVer = {InvProtoVer}")
+                LogDbg(f"PlTyp = {PlTyp}")
                 LogDbg(f"PlLen = {PlLen}")
 
                 if PlTyp == self.Doip.MsgPset.Hdr.PlTyp.RteActReq:
                     LogTr("Routing activation request.")
 
                     SrcAdr, ActTyp, Rsv, OemSpec = self.Doip.Msg.Pl.PrsPlRteActReq(Pl)
-                    LogDbg("SrcAdr = 0x%04X" % SrcAdr)
-                    LogDbg("ActTyp = 0x%02X" % ActTyp)
-                    LogDbg("Rsv = 0x%08X" % Rsv)
-                    LogDbg("OemSpec = " + "" if OemSpec == None else "%08X" % OemSpec)
+                    LogDbg(f"SrcAdr = {SrcAdr}")
+                    LogDbg(f"ActTyp = {ActTyp}")
+                    LogDbg(f"Rsv = {Rsv}")
+                    LogDbg(f"OemSpec = {OemSpec}")
                     self.Doip.TgtAdr = SrcAdr
-                    LogDbg("self.Doip.TgtAdr = 0x%04X" % self.Doip.TgtAdr)
+                    LogDbg(f"self.Doip.TgtAdr = {self.Doip.TgtAdr}")
 
                     self.Doip.RespRteAct()
                 elif PlTyp == self.Doip.MsgPset.Hdr.PlTyp.DiagMsg:
                     LogTr("Diagnostic message.")
 
                     SrcAdr, TgtAdr, UsrDat = self.Doip.Msg.Pl.PrsPlDiag(Pl)
-                    LogDbg("SrcAdr = 0x%04X" % SrcAdr)
-                    LogDbg("TgtAdr = 0x%04X" % TgtAdr)
+                    LogDbg(f"SrcAdr = {SrcAdr}")
+                    LogDbg(f"TgtAdr = {TgtAdr}")
                     LogDbg(f"UsrDat = {UsrDat}")
 
                     self.Doip.PosAckDiagMsg("00")
