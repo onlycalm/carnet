@@ -21,12 +21,12 @@ def main():
     if sys.argv[1] == "-Ser":
         LogTr("Ecu.")
         Ecu = cEcu()
-        atexit.register(Ecu.Doip.DisConn) #Registering Callbacks. Exit terminal call callback function.
+        atexit.register(Ecu.UdsSer.DoipSer.DisConn) #Registering Callbacks. Exit terminal call callback function.
         Ecu.Ota()
     elif sys.argv[1] == "-Clt":
         LogTr("Tester.")
         Tstr = cTstr()
-        atexit.register(Tstr.Doip.DisConn) #Registering Callbacks. Exit terminal call callback function.
+        atexit.register(Tstr.UdsClt.DoipClt.DisConn) #Registering Callbacks. Exit terminal call callback function.
         Tstr.Ota()
 
     LogTr("Exit main().")

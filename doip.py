@@ -15,7 +15,7 @@ from log import *
 
 class cMsgPset:
     # ISO 13400-2-2012.
-    # Doip message structure.
+    # DoIP message structure.
 
     class cHdr:
         # Protocol version.
@@ -574,6 +574,8 @@ class cMsg:
     def PrsMsg(self, Msg):
         LogTr("Enter cMsg.PrsMsg()")
 
+        LogDbg(Msg)
+
         if len(Msg) // 2 < 8:
             raise DatLenErr
 
@@ -919,8 +921,8 @@ class cDoipClt:
 
         return Rtn
 
-def ImitEcu():
-    LogTr("Enter ImitEcu().")
+def ImitDoipSer():
+    LogTr("Enter ImitDoipSer().")
 
     Ecu = cDoipSer()
     Ecu.Lsn()
@@ -954,17 +956,17 @@ def ImitEcu():
                     Ecu.RespRteAct()
                 elif PlTyp == Ecu.MsgPset.Hdr.PlTyp.DiagMsg:
                     LogTr("Diagnostic message.")
-                    SrcAdr, TgtAdr, AckCode, DiagMsg = Ecu.Msg.Pl.PrsPlDiag(Pl)
+                    SrcAdr, TgtAdr, UsrDat = Ecu.Msg.Pl.PrsPlDiag(Pl)
                     LogDbg(f"SrcAdr = {SrcAdr}")
                     LogDbg(f"TgtAdr = {TgtAdr}")
                     LogDbg(f"UsrDat = {UsrDat}")
 
                     Ecu.PosAckDiagMsg("00")
 
-    LogTr("Exit ImitEcu().")
+    LogTr("Exit ImitDoipSer().")
 
-def ImitTstr():
-    LogTr("Enter ImitTstr().")
+def ImitDoipClt():
+    LogTr("Enter ImitDoipClt().")
 
     Tstr = cDoipClt()
     Tstr.Conn()
@@ -973,12 +975,12 @@ def ImitTstr():
     Tstr.ReqDiag("1003")
     Tstr.RespDiag()
 
-    LogTr("Exit ImitTstr().")
+    LogTr("Exit ImitDoipClt().")
 
 if __name__ == "__main__":
     LogTr("__main__")
 
     if sys.argv[1] == "-Ser":
-        ImitEcu()
+        ImitDoipSer()
     elif sys.argv[1] == "-Clt":
-        ImitTstr()
+        ImitDoipClt()
