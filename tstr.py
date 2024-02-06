@@ -10,26 +10,27 @@
 
 from log import *
 from doip import *
+from uds import *
 
 class cTstr:
     def __init__(self):
         LogTr("Enter cTstr.__init__()")
 
-        self.Doip = cDoipClt()
+        self.UdsClt = cUdsClt()
 
         LogTr("Exit cTstr.__init__()")
 
     def Ota(self):
         LogTr("Enter cTstr.Ota()")
 
-        if self.Doip.Conn():
+        if self.UdsClt.DoipClt.Conn():
             LogScs("Tcp connection succeeded.")
 
-            self.Doip.ReqRteAct()
-            PlTyp, RteActRespCode = self.Doip.RespRteAct()
+            self.UdsClt.DoipClt.ReqRteAct()
+            PlTyp, RteActRespCode = self.UdsClt.DoipClt.RespRteAct()
             LogDbg(f"PlTyp = {PlTyp}")
             LogDbg(f"RteActRespCode = {RteActRespCode}")
-            self.Doip.ReqDiag("1003")
-            self.Doip.RespDiag()
+            self.UdsClt.DoipClt.ReqDiag("1003")
+            self.UdsClt.DoipClt.RespDiag()
 
         LogTr("Exit cTstr.Ota()")

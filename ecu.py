@@ -10,55 +10,55 @@
 
 from log import *
 from doip import *
+from uds import *
 
 class cEcu:
     def __init__(self):
         LogTr("Enter cEcu.__init__()")
 
-        self.Doip = cDoipSer()
+        self.UdsSer = cUdsSer()
 
         LogTr("Exit cEcu.__init__()")
 
     def Ota(self):
         LogTr("Enter cEcu.Ota()")
 
-        self.Doip.Lsn()
+        self.UdsSer.Lsn()
 
         while True:
-            if self.Doip.IsRecvBufMty() == False:
-                RecvMsg = self.Doip.Recv()
+            if self.UdsSer.DoipSer.IsRecvBufMty() == False:
+                RecvMsg = self.UdsSer.DoipSer.Recv()
                 LogDbg(f"RecvMsg: {RecvMsg}")
 
-                Hdr, Pl = self.Doip.Msg.PrsMsg(RecvMsg)
-                LogDbg(f"Hdr = {Hdr}")
-                LogDbg(f"Pl = {Pl}")
+                if RecvMsg != "":
+                    Hdr, Pl = self.UdsSer.DoipSer.Msg.PrsMsg(RecvMsg)
+                    LogDbg(f"Hdr = {Hdr}")
+                    LogDbg(f"Pl = {Pl}")
 
-                ProtoVer, InvProtoVer, PlTyp, PlLen = self.Doip.Msg.Hdr.PrsHdr(Hdr)
-                LogDbg(f"ProtoVer = {ProtoVer}")
-                LogDbg(f"InvProtoVer = {InvProtoVer}")
-                LogDbg(f"PlTyp = {PlTyp}")
-                LogDbg(f"PlLen = {PlLen}")
+                    ProtoVer, InvProtoVer, PlTyp, PlLen = self.UdsSer.DoipSer.Msg.Hdr.PrsHdr(Hdr)
+                    LogDbg(f"ProtoVer = {ProtoVer}")
+                    LogDbg(f"InvProtoVer = {InvProtoVer}")
+                    LogDbg(f"PlTyp = {PlTyp}")
+                    LogDbg(f"PlLen = {PlLen}")
 
-                if PlTyp == self.Doip.MsgPset.Hdr.PlTyp.RteActReq:
-                    LogTr("Routing activation request.")
+                    if PlTyp == self.UdsSer.DoipSer.MsgPset.Hdr.PlTyp.RteActReq:
+                        LogTr("Routing activation request.")
+                        SrcAdr, ActTyp, Rsv, OemSpec = self.UdsSer.DoipSer.Msg.Pl.PrsPlRteActReq(Pl)
+                        LogDbg(f"SrcAdr = {SrcAdr}")
+                        LogDbg(f"ActTyp = {ActTyp}")
+                        LogDbg(f"Rsv = {Rsv}")
+                        LogDbg(f"OemSpec = {OemSpec}")
+                        self.UdsSer.DoipSer.TgtAdr = SrcAdr
+                        LogDbg(f"self.UdsSer.DoipSer.TgtAdr = {self.UdsSer.DoipSer.TgtAdr}")
 
-                    SrcAdr, ActTyp, Rsv, OemSpec = self.Doip.Msg.Pl.PrsPlRteActReq(Pl)
-                    LogDbg(f"SrcAdr = {SrcAdr}")
-                    LogDbg(f"ActTyp = {ActTyp}")
-                    LogDbg(f"Rsv = {Rsv}")
-                    LogDbg(f"OemSpec = {OemSpec}")
-                    self.Doip.TgtAdr = SrcAdr
-                    LogDbg(f"self.Doip.TgtAdr = {self.Doip.TgtAdr}")
+                        self.UdsSer.DoipSer.RespRteAct()
+                    elif PlTyp == self.UdsSer.DoipSer.MsgPset.Hdr.PlTyp.DiagMsg:
+                        LogTr("Diagnostic message.")
+                        SrcAdr, TgtAdr, UsrDat = self.UdsSer.DoipSer.Msg.Pl.PrsPlDiag(Pl)
+                        LogDbg(f"SrcAdr = {SrcAdr}")
+                        LogDbg(f"TgtAdr = {TgtAdr}")
+                        LogDbg(f"UsrDat = {UsrDat}")
 
-                    self.Doip.RespRteAct()
-                elif PlTyp == self.Doip.MsgPset.Hdr.PlTyp.DiagMsg:
-                    LogTr("Diagnostic message.")
-
-                    SrcAdr, TgtAdr, UsrDat = self.Doip.Msg.Pl.PrsPlDiag(Pl)
-                    LogDbg(f"SrcAdr = {SrcAdr}")
-                    LogDbg(f"TgtAdr = {TgtAdr}")
-                    LogDbg(f"UsrDat = {UsrDat}")
-
-                    self.Doip.PosAckDiagMsg("00")
+                        self.UdsSer.DoipSer.PosAckDiagMsg("00")
 
         LogTr("Exit cEcu.Ota()")
