@@ -14,19 +14,19 @@ from log import *
 
 class cTcpSer:
     """
-    @clas cTcpSer
+    @class cTcpSer
     @brief Tcp server class.
     @param[in] LocIpAdr Tcp server local ip address.
     - 127.0.0.1 Default value.
     @param[in] Tcp server locPt Local port.
     - 9999 Default value.
-    @ivar self.Sock Tcp server socket object。
-    @ivar self.LocIpAdr Tcp server local ip address.
-    @ivar self.RmtIpAdr Tcp server remote ip address.
-    @ivar self.LocPt Tcp server local port.
-    @ivar self.RmtPt Tcp server remote port.
-    @ivar self.ConnSta Tcp server connect status.
-    @ivar self.ConnHdl Tcp server handle.
+    @var self.Sock Tcp server socket object。
+    @var self.LocIpAdr Tcp server local ip address.
+    @var self.RmtIpAdr Tcp server remote ip address.
+    @var self.LocPt Tcp server local port.
+    @var self.RmtPt Tcp server remote port.
+    @var self.ConnSta Tcp server connect status.
+    @var self.ConnHdl Tcp server handle.
     """
 
     def __init__(self, LocIpAdr = "127.0.0.1", LocPt = 9999):
@@ -188,7 +188,7 @@ class cTcpSer:
 
 class cTcpClt:
     """
-    @clas cTcpClt
+    @class cTcpClt
     @brief Tcp client class.
     @param[in] LocIpAdr Tcp client local ip address.
     - 127.0.0.1 Default value.
@@ -198,12 +198,12 @@ class cTcpClt:
     - 9998 Default value.
     @param[in] RmtPt Tcp client remote port.
     - 9999 Default value.
-    @ivar self.Sock Tcp client socket object。
-    @ivar self.LocIpAdr Tcp client local ip address.
-    @ivar self.RmtIpAdr Tcp client remote ip address.
-    @ivar self.LocPt Tcp client local port.
-    @ivar self.RmtPt Tcp client remote port.
-    @ivar self.ConnSta Tcp client connect status.
+    @var self.Sock Tcp client socket object。
+    @var self.LocIpAdr Tcp client local ip address.
+    @var self.RmtIpAdr Tcp client remote ip address.
+    @var self.LocPt Tcp client local port.
+    @var self.RmtPt Tcp client remote port.
+    @var self.ConnSta Tcp client connect status.
     """
 
     def __init__(self, LocIpAdr = "127.0.0.1", RmtIpAdr = "127.0.0.1", LocPt = 9998, RmtPt = 9999):
@@ -393,33 +393,53 @@ class cTcpClt:
 
         return ChkRst
 
+def ImitTcpSer():
+    """
+    @fn ImitTcpSer
+    @brief Imitate tcp server.
+    @param None
+    @return None
+    """
+
+    LogTr("Enter ImitTcpSer.")
+
+    TcpSer = cTcpSer()
+    TcpSer.Lsn()
+
+    while True:
+        if TcpSer.IsRecvBufMty() == False:
+            Msg = TcpSer.Recv()
+            LogDbg(f"Recv: {Msg}")
+            TcpSer.Snd("BB")
+
+    TcpSer.DisConn()
+
+def ImitTcpClt():
+    """
+    @fn ImitTcpClt
+    @brief Imitate tcp client.
+    @param None
+    @return None
+    """
+
+    LogTr("Enter ImitTcpClt.")
+
+    TcpClt = cTcpClt()
+    TcpClt.Conn()
+    TcpClt.Snd("AA")
+
+    while True:
+        if TcpClt.IsRecvBufMty() == False:
+            Msg = TcpClt.Recv()
+            LogDbg(f"Recv: {Msg}")
+            TcpClt.Snd("AA")
+
+    TcpClt.DisConn()
+
 if __name__ == "__main__":
     LogTr("__main__")
 
     if sys.argv[1] == "-Ser":
-        LogTr("Test tcp server.")
-
-        TcpSer = cTcpSer()
-        TcpSer.Lsn()
-
-        while True:
-            if TcpSer.IsRecvBufMty() == False:
-                Msg = TcpSer.Recv()
-                LogDbg(f"Recv: {Msg}")
-                TcpSer.Snd("BB")
-
-        TcpSer.DisConn()
+        ImitTcpSer()
     elif sys.argv[1] == "-Clt":
-        LogTr("Test tcp client.")
-
-        TcpClt = cTcpClt()
-        TcpClt.Conn()
-        TcpClt.Snd("AA")
-
-        while True:
-            if TcpClt.IsRecvBufMty() == False:
-                Msg = TcpClt.Recv()
-                LogDbg(f"Recv: {Msg}")
-                TcpClt.Snd("AA")
-
-        TcpClt.DisConn()
+        ImitTcpClt()
