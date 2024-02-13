@@ -1,6 +1,6 @@
 ##
 # @file doip.py
-# @brief Doip protocol.
+# @brief DoIP protocol.
 # @details None.
 # @author Calm
 # @date 2023-05-13
@@ -14,14 +14,51 @@ from exc import *
 from log import *
 
 class cMsgPset:
-    # ISO 13400-2-2012.
-    # DoIP message structure.
+    """
+    @class cMsgPset
+    @brief The preset value of DoIP message.
+    @details ISO 13400-2-2012.
+    @param None
+    @var self.Hdr The header of a DoIP message.
+    @var self.Pl The payload of a DoIP message.
+    """
 
     class cHdr:
-        # Protocol version.
-        # Pos = 0, Len = 1.
+        """
+        @fn cHdr
+        @brief The preset value of DoIP header.
+        @param None
+        @var self.ProtoVer Protocol version number.
+        @var self.InvProtoVer Inversion protocol version number.
+        @var self.PlTyp Payload type.
+        """
+
         class cProtoVer:
+            """
+            @class cProtoVer
+            @brief The preset value of protocol version number.
+            @details Pos = 0, Len = 1.
+            @param None
+            @var self.Rsv Reserved.
+            - "00" Protocol definition value.
+            @var self.v2010 DoIP ISO/DIS 13400-2:2010.
+            - "01" Protocol definition value.
+            @var self.v2012 DoIP ISO 13400-2:2012.
+            - "02" Protocol definition value.
+            @var self.IsoRsv Reserved by this part of ISO 13400.
+            - "03~FE" Protocol definition value.
+            @var self.Vin Vehicle identification request message.
+            - "FF" Protocol definition value.
+            """
+
             def __init__(self):
+                """
+                @fn __init__
+                @brief Constructor for class cProtoVer.
+                @param None
+                @return None
+                """
+
                 LogTr("Enter cProtoVer.__init__()")
 
                 self.Rsv = "00" # 0x00: Reserved.
@@ -37,10 +74,32 @@ class cMsgPset:
 
                 LogTr("Exit cProtoVer.__init__()")
 
-        # Inverse protocol version.
-        # Pos = 1, Len = 1.
         class cInvProtoVer:
+            """
+            @class cInvProtoVer
+            @brief The preset value of reverse protocol version number.
+            @details Pos = 1, Len = 1.
+            @param None
+            @var self.Rsv Reserved.
+            - "FF" Protocol definition value.
+            @var self.v2010 DoIP ISO/DIS 13400-2:2010.
+            - "FE" Protocol definition value.
+            @var self.v2012 DoIP ISO 13400-2:2012.
+            - "FD" ProtoVer definition value.
+            @var self.Rsv Reserved.
+            - "01~FC" Protocol definition value.
+            @var self.Vin Vehicle identification request message.
+            - "00" Protocol definition value.
+            """
+
             def __init__(self):
+                """
+                @fn __init__
+                @brief Constructor for class cInvProtoVer.
+                @param None
+                @return None
+                """
+
                 LogTr("Enter cInvProtoVer.__init__()")
 
                 self.Rsv = "FF" #0xFF: Reserved.
@@ -56,10 +115,63 @@ class cMsgPset:
 
                 LogTr("Exit cInvProtoVer.__init__()")
 
-        # Payload type(GH_PT).
-        # Pos = 2, Len = 2.
         class cPlTyp:
+            """
+            @class cPlTyp
+            @brief The preset value of payload messages.
+            @details Pos = 2, Len = 2.
+            @param None
+            @var self.GenDoipHdrNegAck Generic DoIP header negative acknowledge. Mandatory.
+            - "0000" Protocol definition value.
+            @var self.VehIdReqMsg Vehicle identification request message. Mandatory.
+            - "0001" Protocol definition value.
+            @var self.VehIdReqMsgEid Vehicle identification request message with EID. Optional.
+            - "0002" Protocol definition value.
+            @var self.VehIdReqMsgWithVin Vehicle identification request message with VIN. Mandatory.
+            - "0003" Protocol definition value.
+            @var self.VehAnncMsg Vehicle announcement message/vehicle identification response message.
+                                 Mandatory.
+            - "0004" Protocol definition value.
+            @var self.RteActReq Routing activation request. Mandatory.
+            - "0005" Protocol definition value.
+            @var self.RteActResp Routing activation response. Mandatory.
+            - "0006" Protocol definition value.
+            @var self.AlvChkReq Alive check request. Mandatory.
+            - "0007" Protocol definition value.
+            @var self.AlvChkResp Alive check response. Mandatory.
+            - "0008" Protocol definition value.
+            @var self.IsoRsv Reserved. Reserve.
+            - "0009~4000" Protocol definition value.
+            @var self.DoipEntyStsReq DoIP entity status request. Optional.
+            - "4001" Protocol definition value.
+            @var self.DoipEntyStsResp DoIP entity status response. Optional.
+            - "4002" Protocol definition value.
+            @var self.DiagPwrMdInfoReq Diagnostic power mode information request. Mandatory.
+            - "4003" Protocol definition value.
+            @var self.DiagPwrMdInfoResp Diagnostic powermode information response. Mandatory.
+            - "4004" Protocol definition value.
+            @var self.IsoRsv1 Reserved. Reserve.
+            - "4005~8000"  Protocol definition value.
+            @var self.DiagMsg Diagnostic message. Mandatory.
+            - "8001" Protocol definition value.
+            @var self.DiagMsgPosAck Diagnostic message positive acknowledegment. Mandatory.
+            - "8002" Protocol definition value.
+            @var self.DiagMsgNegAck Diagnostic message negative acknowledegment. Mandatory.
+            - "8003" Protocol definition value.
+            @var self.IsoRsv2 Reserved. Reserve.
+            - "8004~EFFF" Protocol definition value.
+            @var self.MfrRsv Reserve for manufacturer-specific use. Optional.
+            - "F000~FFFF" Protocol definition value.
+            """
+
             def __init__(self):
+                """
+                @fn __init__
+                @brief Constructor for class cPlTyp.
+                @param None
+                @return None
+                """
+
                 LogTr("Enter cPlTyp.__init__()")
 
                 # Mandatory.
@@ -97,9 +209,9 @@ class cMsgPset:
                 LogDbg(f"self.DoipEntyStsResp = {self.DoipEntyStsResp}")
 
                 # Mandatory.
-                self.DiagPwrMdInfoReq = "4003" # 0x4003: Diagnostic power mode information response.
+                self.DiagPwrMdInfoReq = "4003" # 0x4003: Diagnostic power mode information request.
                 LogDbg(f"self.DiagPwrMdInfoReq = {self.DiagPwrMdInfoReq}")
-                self.DiagPwrMdInfoResp = "4004" # 0x4004: Diagnostic power mode information request.
+                self.DiagPwrMdInfoResp = "4004" # 0x4004: Diagnostic power mode information response.
                 LogDbg(f"self.DiagPwrMdInfoResp = {self.DiagPwrMdInfoResp}")
 
                 # Reserve.
@@ -125,6 +237,13 @@ class cMsgPset:
                 LogTr("Exit cPlTyp.__init__()")
 
         def __init__(self):
+            """
+            @fn __init__
+            @brief Constructor for class cHdr.
+            @param None
+            @return None
+            """
+
             LogTr("Enter cHdr.__init__()")
 
             self.ProtoVer = self.cProtoVer()
@@ -134,9 +253,49 @@ class cMsgPset:
             LogTr("Exit cHdr.__init__()")
 
     class cPl:
+        """
+        @class cPl
+        @brief DoIP payload message structure.
+        @param None
+        @var self.RteActReq Routine activation request.
+        @var self.RteActResp Routine activation response.
+        @var self.DiagMsg Diagnostic message.
+        """
+
         class cRteActReq:
+            """
+            @class cRteActReq
+            @brief The preset value of route activation request message.
+            @param None
+            @var self.ActTyp Routine type.
+            @var self.Rsv Reserved.
+            """
+
             class cActTyp:
+                """
+                @class cActTyp
+                @brief The preset value of active type.
+                @param None
+                @var self.Dflt Default. Mandatory.
+                - "00" ProtoVer definition value.
+                @var self.WwhObd WWH-OBD. Mandatory.
+                - "01" ProtoVer definition value.
+                @var self.IsoRsv ISO/SAE reserved. Reserve.
+                - "02~DF" ProtoVer definition value.
+                @var self.CntrlSec Central security. Optional.
+                - "E0" ProtoVer definition value.
+                @var self.OemSpec Available for additional OEM-specific use. Optional.
+                - "E1~FF" ProtoVer definition value.
+                """
+
                 def __init__(self):
+                    """
+                    @fn __init__
+                    @brief Constructor for class cActTyp.
+                    @param None
+                    @return None
+                    """
+
                     LogTr("Enter cActTyp.__init__()")
 
                     # Mandatory.
@@ -158,15 +317,30 @@ class cMsgPset:
                     LogTr("Exit cActTyp.__init__()")
 
             class cRsv:
+                """
+                @class cRsv
+                @brief Default value.
+                @param None
+                @var self.Dflt Default value.
+                - "00000000" ProtoVer definition value.
+                """
+
                 def __init__(self):
-                    LogTr("Enter cActTyp.__init__()")
+                    LogTr("Enter cRsv.__init__()")
 
                     self.Dflt = "00000000" # 0x00000000: Default
                     LogDbg(f"self.Dflt = {self.Dflt}")
 
-                    LogTr("Exit cActTyp.__init__()")
+                    LogTr("Exit cRsv.__init__()")
 
             def __init__(self):
+                """
+                @fn __init__
+                @brief Constructor for class cRteActReq.
+                @param None
+                @return None
+                """
+
                 LogTr("Enter cRteActReq.__init__()")
 
                 self.ActTyp = self.cActTyp()
@@ -175,14 +349,58 @@ class cMsgPset:
                 LogTr("Exit cRteActReq.__init__()")
 
         class cRteActResp:
+            """
+            @class cRteActResp
+            @brief The preset value of route activation response message.
+            @param None
+            @var self.RteActRespCode Routine activation response code.
+            @var self.Rsv Reserved.
+            """
+
             class cRteActRespCode:
+                """
+                @class cRteActRespCode
+                @brief The preset value of routing activation response code.
+                @param None
+                @var self.UnKSrcAdr Routine activation denied due to unknown source address. Mandatory. Mandatory.
+                - "00" ProtoVer definition value.
+                @var self.SockRegAct Routine activation denied because all concurrently supported TCP_DATA
+                                     socket are registered and active. Mandatory.
+                - "01" ProtoVer definition value.
+                @var self.SaDiffAlrAct Routine activation denied because and SA different from the table
+                                       connection entry was received on the already activation TCP_DATA
+                                       socket. Mandatory.
+                - "02" ProtoVer definition value.
+                @var self.SaAlrRegActDiff Routine activation denied because the SA is already registered
+                                          and active on a different TCP_DATA socket. Mandatory.
+                - "03" ProtoVer definition value.
+                @var self.MisAuthn Routine activation denied due to missing authentication. Optional.
+                - "04" ProtoVer definition value.
+                @var self.RejConf Routine activation denied due to rejected confirmation. Optional.
+                - "05" ProtoVer definition value.
+                @var self.UnsptRteAct Routine activation denied due to unsupported routing activation type. Mandatory.
+                - "06" ProtoVer definition value.
+                @var self.IsoRsv Reserved. Reserve.
+                - "07~0F" ProtoVer definition value.
+                @var self.RteScsAct Routine successfuly activation. Mandatory.
+                - "10" ProtoVer definition value.
+                @var self.RteWilAct Routine will be activation. Optional.
+                - "11" ProtoVer definition value.
+                @var self.IsoRsv1 Reserved. Reserve.
+                - "12~DF" ProtoVer definition value.
+                @var self.VehMfrSpec Vehicle-manufacturer specific. Optional.
+                - "E0~FF" ProtoVer definition value.
+                @var self.IsoRsv2 Reserved. Reserve.
+                - "FF" ProtoVer definition value.
+                """
+
                 def __init__(self):
                     LogTr("Enter cRteActRespCode.__init__()")
 
                     # Mandatory.
                     self.UnKSrcAdr = "00" # 0x00: Routine activation denied due to unknown source address.
                     LogDbg(f"self.UnKSrcAdr = {self.UnKSrcAdr}")
-                    self.SockRegAct = "01" # 0x01: Routine activation denied bacause all concurrently
+                    self.SockRegAct = "01" # 0x01: Routine activation denied because all concurrently
                                            # supported TCP_DATA socket are registered and active.
                     LogDbg(f"self.SockRegAct = {self.SockRegAct}")
                     self.SaDiffAlrAct = "02" # 0x02: Routine activation denied because an SA different from the
@@ -230,15 +448,36 @@ class cMsgPset:
                     LogTr("Exit cRteActRespCode.__init__()")
 
             class cRsv:
+                """
+                @class cRsv
+                @brief The preset value of Reserve.
+                @param None
+                @var self.Dflt Reserved.
+                """
+
                 def __init__(self):
-                    LogTr("Enter cRteActRespCode.__init__()")
+                    """
+                    @fn __init__
+                    @brief Constructor for class cRsv.
+                    @param None
+                    @return None
+                    """
+
+                    LogTr("Enter cRsv.__init__()")
 
                     self.Dflt = "00000000" # 0x00000000: Default
                     LogDbg(f"self.Dflt = {self.Dflt}")
 
-                    LogTr("Exit cRteActRespCode.__init__()")
+                    LogTr("Exit cRsv.__init__()")
 
             def __init__(self):
+                """
+                @fn __init__
+                @brief Constructor for class cRteActResp.
+                @param None
+                @return None
+                """
+
                 LogTr("Enter cRteActResp.__init__()")
 
                 self.RteActRespCode = self.cRteActRespCode()
@@ -247,8 +486,35 @@ class cMsgPset:
                 LogTr("Exit cRteActResp.__init__()")
 
         class cDiagMsg:
+            """
+            @class cDiagMsg
+            @brief Diagnostic message.
+            @param None
+            @var self.PosAckCode Positive response code.
+            @var self.NegAckCode Negative response code.
+            """
+
             class cPosAckCode:
+                """
+                @class cPosAckCode
+                @brief The preset value of positive acknowledge code.
+                @param None
+                @var self.RteCor Routing confirmation acknowledge (ACK) message indicating that the
+                                 diagnostic message was correctly received, processed and put into
+                                 the transmission buffer of the destination network.
+                - "00" Protocol definition value.
+                @var self.IsoRsv Reserved. Reserve.
+                - "01~FF" Protocol definition value.
+                """
+
                 def __init__(self):
+                    """
+                    @fn __init__
+                    @brief Constructor for class cPosAckCode.
+                    @param None
+                    @return None
+                    """
+
                     LogTr("Enter cPosAckCode.__init__()")
 
                     # Mandatory.
@@ -264,7 +530,38 @@ class cMsgPset:
                     LogTr("Exit cPosAckCode.__init__()")
 
             class cNegAckCode:
+                """
+                @class cNegAckCode
+                @brief The preset value of negative acknowledge code.
+                @param None
+                @var self.IsoRsv Reserved. Reserve. Reserve.
+                - "00~01" Protocol definition value.
+                @var self.InvSrcAdr Invalid source address. Mandatory.
+                - "02" Protocol definition value.
+                @var self.UnkTgtAdr Unknown target address. Mandatory.
+                - "03" Protocol definition value.
+                @var self.DiagMsgLrg Diagnostic message too large. Mandatory.
+                - "04" Protocol definition value.
+                @var self.OtMem Out of memory. Mandatory.
+                - "05" Protocol definition value.
+                @var self.TgtUnreach Target unreachable. Optional.
+                - "06" Protocol definition value.
+                @var self.UnkNet Unknown network. Optional.
+                - "07" Protocol definition value.
+                @var self.TransProtoErr Transport protocol error. Optional.
+                - "08" Protocol definition value.
+                @var self.IsoRsv1 Reserved. Reserve.
+                - "09~FF" Protocol definition value.
+                """
+
                 def __init__(self):
+                    """
+                    @fn __init__
+                    @brief Constructor for class cNegAckCode.
+                    @param None
+                    @return None
+                    """
+
                     LogTr("Enter cNegAckCode.__init__()")
 
                     # Reserve.
@@ -296,6 +593,13 @@ class cMsgPset:
                     LogTr("Exit cNegAckCode.__init__()")
 
             def __init__(self):
+                """
+                @fn __init__
+                @brief Constructor for class cPosAckCode.
+                @param None
+                @return None
+                """
+
                 LogTr("Enter cDiagMsg.__init__()")
 
                 self.PosAckCode = self.cPosAckCode()
@@ -304,6 +608,13 @@ class cMsgPset:
                 LogTr("Exit cDiagMsg.__init__()")
 
         def __init__(self):
+            """
+            @fn __init__
+            @brief Constructor for class cPl.
+            @param None
+            @return None
+            """
+
             LogTr("Enter cPl.__init__()")
 
             self.RteActReq = self.cRteActReq()
@@ -313,6 +624,13 @@ class cMsgPset:
             LogTr("Exit cPl.__init__()")
 
     def __init__(self):
+        """
+        @fn __init__
+        @brief Constructor for class cMsgPset.
+        @param None
+        @return None
+        """
+
         LogTr("Enter cMsgPset.__init__()")
 
         self.Hdr = self.cHdr()
@@ -321,11 +639,30 @@ class cMsgPset:
         LogTr("Exit cMsgPset.__init__()")
 
 class cMsg:
-    # ISO 13400-2-2012.
-    # Doip message structure.
+    """
+    @class cMsg
+    @brief DoIP message.
+    @param None
+    @var self.cHdr DoIP message header.
+    @var self.cPl DoIP message payload.
+    """
 
     class cHdr:
+        """
+        @class cHdr
+        @brief DoIP header message processing.
+        @param None
+        @var None
+        """
+
         def __init__(self):
+            """
+            @fn __init__
+            @brief Constructor for class cHdr.
+            @param None
+            @return None
+            """
+
             LogTr("Enter cHdr.__init__()")
 
             pass
@@ -333,6 +670,15 @@ class cMsg:
             LogTr("Exit cHdr.__init__()")
 
         def AssemHdr(self, ProtoVer, PlTyp, PlLen):
+            """
+            @fn AssemHdr
+            @brief Assembly header message.
+            @param[in] ProtoVer Protocol version.
+            @param[in] PlTyp Payload type.
+            @param[in] PlLen Payload length.
+            @return DoIP header message.
+            """
+
             LogTr("Enter cHdr.AssemHdr()")
 
             LogDbg(f"ProtoVer = {ProtoVer}")
@@ -349,6 +695,20 @@ class cMsg:
             return Hdr
 
         def PrsHdr(self, Hdr):
+            """
+            @fn PrsHdr
+            @brief Parsing DoIP header message.
+            @param[in] Hdr DoIP header message.
+            @return ProtoVer
+            - ProtoVer Protocol version.
+            @return InvProtoVer
+            - InvProtoVer Inversion protocol version.
+            @return PlTyp
+            - PlTyp Payload type.
+            @return PlLen
+            - PlLen Payload length.
+            """
+
             LogTr("Enter cHdr.PrsHdr()")
 
             LogDbg(f"Hdr = {Hdr}")
@@ -367,7 +727,21 @@ class cMsg:
             return ProtoVer, InvProtoVer, PlTyp, PlLen
 
     class cPl:
+        """
+        @class cPl
+        @brief DoIP payload message processing.
+        @param None
+        @var None
+        """
+
         def __init__(self):
+            """
+            @fn __init__
+            @brief Constructor for class cPl.
+            @param None
+            @return None
+            """
+
             LogTr("Enter cPl.__init__()")
 
             pass
@@ -375,6 +749,17 @@ class cMsg:
             LogTr("Exit cPl.__init__()")
 
         def AssemPlRteActReq(self, SrcAdr, ActTyp, Rsv, OemSpec = ""):
+            """
+            @fn AssemPlRteActReq
+            @brief Assembly payload routing activation request.
+            @param[in] SrcAdr Source address.
+            @param[in] ActTyp Activation type.
+            @param[in] Rsv Reserved.
+            @param[in] OemSpec OEM-Specific.
+            - "" Default value.
+            @return Pl Payload message.
+            """
+
             LogTr("Enter cPl.AssemPlRteActReq()")
 
             # External test equipment address information.
@@ -395,6 +780,18 @@ class cMsg:
             return Pl
 
         def AssemPlRteActResp(self, TstrLgAdr, EntyLgAdr, RteActRespCode, Rsv, OemSpec = ""):
+            """
+            @fn AssemPlRteActResp
+            @brief Assembly payload routing activation response.
+            @param[in] TstrLgAdr Tester logical address.
+            @param[in] EntyLgAdr Entity logical address.
+            @param[in] RteActRespCode Routing activation response code.
+            @param[in] Rsv Reserved.
+            @param[in] OemSpec OEM-Specific.
+            - "" Default value.
+            @return Pl Payload message.
+            """
+
             LogTr("Enter cPl.AssemPlRteActResp()")
 
             # External test equipment address information.
@@ -418,6 +815,16 @@ class cMsg:
             return Pl
 
         def PrsPlRteActReq(self, Pl):
+            """
+            @fn PrsPlRteActReq
+            @brief Parsing payload routing activation request.
+            @param[in] Pl Payload message.
+            @return SrcAdr Source address.
+            @return ActTyp Activation type.
+            @return Rsv Reserved.
+            @return OemSpec OEM-Specific.
+            """
+
             LogTr("Enter cPl.PrsPlRteActReq()")
 
             LogDbg(f"Pl = {Pl}")
@@ -441,6 +848,17 @@ class cMsg:
             return SrcAdr, ActTyp, Rsv, OemSpec
 
         def PrsPlRteActResp(self, Pl):
+            """
+            @fn PrsPlRteActResp
+            @brief Parsing payload activation response.
+            @param[in] Pl Payload message.
+            @return TstrLgAdr Tester logical address.
+            @return EntyLgAdr Entity logical address.
+            @return RteActRespCode Routing activation response code.
+            @return Rsv Reserved.
+            @return OemSpec OEM-Specific.
+            """
+
             LogTr("Enter cPl.PrsPlRteActResp()")
 
             LogDbg(f"Pl = {Pl}")
@@ -468,6 +886,15 @@ class cMsg:
             return TstrLgAdr, EntyLgAdr, RteActRespCode, Rsv, OemSpec
 
         def AssemPlDiag(self, SrcAdr, TgtAdr, UsrDat):
+            """
+            @fn AssemPlDiag
+            @brief Assembly payload diagnostic.
+            @param[in] SrcAdr Source address.
+            @param[in] TgtAdr Target address.
+            @param[in] UsrDat User data.
+            @return Pl Payload message.
+            """
+
             LogTr("Enter cPl.AssemPlDiag()")
 
             # Logical address information.
@@ -487,6 +914,15 @@ class cMsg:
             return Pl
 
         def PrsPlDiag(self, Pl):
+            """
+            @fn PrsPlDiag
+            @brief Parsing payload diagnostic.
+            @param[in] Pl Payload message.
+            @return SrcAdr Source address.
+            @return TgtAdr Target address.
+            @return UsrDat User data.
+            """
+
             LogTr("Enter cPl.PrsPlDiag()")
 
             # Logical address information.
@@ -506,6 +942,16 @@ class cMsg:
             return SrcAdr, TgtAdr, UsrDat
 
         def PrsPlPosDiag(self, Pl):
+            """
+            @fn PrsPlPosDiag
+            @brief Parsing payload positive diagnostic.
+            @param[in] Pl Payload message.
+            @return SrcAdr Source address.
+            @return TgtAdr Target address.
+            @return AckCode Acknowledge code.
+            @return DiagMsg Diagnostic message.
+            """
+
             LogTr("Enter cPl.PrsPlPosDiag()")
 
             # Logical address information.
@@ -529,6 +975,16 @@ class cMsg:
             return SrcAdr, TgtAdr, AckCode, DiagMsg
 
         def PrsPlNegDiag(self, Pl):
+            """
+            @fn PrsPlNegDiag
+            @brief Parsing payload negative diagnostic.
+            @param[in] Pl Payload message.
+            @return SrcAdr Source address.
+            @return TgtAdr Target address.
+            @return NackCode Negative acknowledge code.
+            @return DiagMsg Diagnostic message.
+            """
+
             LogTr("Enter cPl.PrsPlNegDiag()")
 
             # Logical address information.
@@ -552,6 +1008,13 @@ class cMsg:
             return SrcAdr, TgtAdr, NackCode, DiagMsg
 
     def __init__(self):
+        """
+        @fn __init__
+        @brief Constructor for class cMsg.
+        @param None
+        @return None
+        """
+
         LogTr("Enter cMsg.__init__()")
 
         self.Hdr = self.cHdr()
@@ -562,6 +1025,14 @@ class cMsg:
         LogTr("Exit cMsg.__init__()")
 
     def AssemMsg(self, Hdr, Pl):
+        """
+        @fn AssemMsg
+        @brief Assembly DoIP message
+        @param[in] Hdr DoIP header.
+        @param[in] Pl DoIP payload.
+        @return Msg DoIP message.
+        """
+
         LogTr("Enter cMsg.AssemMsg()")
 
         Msg = Hdr + Pl
@@ -572,6 +1043,14 @@ class cMsg:
         return Msg
 
     def PrsMsg(self, Msg):
+        """
+        @fn PrsMsg
+        @brief Parsing DoIP message.
+        @param[in] Msg DoIP message.
+        @return Hdr DoIP header.
+        @return Pl DoIP payload.
+        """
+
         LogTr("Enter cMsg.PrsMsg()")
 
         LogDbg(Msg)
@@ -589,7 +1068,40 @@ class cMsg:
         return Hdr, Pl
 
 class cDoipSer:
+    """
+    @class cDoipSer
+    @brief DoIP server.
+    @param[in] SrcIpAdr Source ip address.
+    - "127.0.0.1" Default value.
+    @param[in] SrcPt Source port.
+    - 13400 Default value.
+    @param[in] SrcAdr Source address.
+    - "1000" Default value.
+    @param[in] FunSrcAdr Function source address.
+    - "E000" Default value.
+    @var self.SrcIpAdr Source ip address.
+    @var self.SrcPt Source port.
+    @var self.SrcAdr Source address.
+    @var self.FunSrcAdr Function source address.
+    @var self.TgtAdr Target address.
+    @var self.ConnSta Connect status.
+    """
+
     def __init__(self, SrcIpAdr = "127.0.0.1", SrcPt = 13400, SrcAdr = "1000", FunSrcAdr = "E000"):
+        """
+        @fn __init__
+        @brief Constructor for class cDoipSer.
+        @param[in] SrcIpAdr Source ip address.
+        - "127.0.0.1" Default value.
+        @param[in] SrcPt Source port.
+        - 13400 Default value.
+        @param[in] SrcAdr Source address.
+        - "1000" Default value.
+        @param[in] FunSrcAdr Function source address.
+        - "E000" Default value.
+        @return None
+        """
+
         LogTr("Enter cDoipSer.__init__()")
 
         LogDbg(f"SrcIpAdr = {SrcIpAdr}")
@@ -610,12 +1122,22 @@ class cDoipSer:
         self.ConnSta = False # Connect status. True: connected, False: not connected.
         LogDbg(f"self.ConnSta = {self.ConnSta}")
         self.Msg = cMsg()
+        LogDbg(f"self.Msg = {self.Msg}")
         self.MsgPset = cMsgPset()
+        LogDbg(f"self.MsgPset = {self.MsgPset}")
         self.TcpSer = tcp.cTcpSer(SrcIpAdr, SrcPt)
+        LogDbg(f"self.TcpSer = {self.TcpSer}")
 
         LogTr("Exit cDoipSer.__init__()")
 
     def Lsn(self):
+        """
+        @fn Lsn
+        @brief Listen DoIP connect request.
+        @param None
+        @return None
+        """
+
         LogTr("Enter cDoipSer.Lsn()")
 
         self.TcpSer.Lsn()
@@ -624,6 +1146,13 @@ class cDoipSer:
         LogTr("Exit cDoipSer.Lsn()")
 
     def DisConn(self):
+        """
+        @fn DisConn
+        @brief DoIP disconnect
+        @param None
+        @return None
+        """
+
         LogTr("Enter cDoipSer.DisConn()")
 
         if self.ConnSta == True:
@@ -636,22 +1165,36 @@ class cDoipSer:
         LogTr("Exit cDoipSer.DisConn()")
 
     def Snd(self, Msg):
+        """
+        @fn Snd
+        @brief Send DoIP message.
+        @param[in] Msg DoIP message.
+        @return None
+        """
+
         LogTr("Enter cDoipSer.Snd()")
 
         if self.ConnSta == True:
             self.TcpSer.Snd(Msg)
-            LogInf("Doip send: " + Msg)
+            LogInf("DoIP send: " + Msg)
         else:
             LogErr("Socket not connected, sending failed.")
 
         LogTr("Exit cDoipSer.Snd()")
 
     def Recv(self):
+        """
+        @fn Recv
+        @brief Receive DoIP message.
+        @param None
+        @return DoIP message.
+        """
+
         LogTr("Enter cDoipSer.Recv()")
 
         if self.ConnSta == True:
             Msg = self.TcpSer.Recv()
-            LogInf("Doip recv: " + Msg)
+            LogInf("DoIP recv: " + Msg)
         else:
             Msg = ""
             LogErr("Socket not connected, receiving failed.")
@@ -661,6 +1204,13 @@ class cDoipSer:
         return Msg
 
     def IsRecvBufMty(self):
+        """
+        @fn IsRecvBufMty
+        @brief Is the receive cache empty.
+        @param None
+        @return Receive buffer status.
+        """
+
         # LogTr("Enter cDoipSer.IsRecvBufMty()")
 
         if self.ConnSta == True:
@@ -674,6 +1224,13 @@ class cDoipSer:
         return RecvBufSta
 
     def RespRteAct(self):
+        """
+        @fn RespRteAct
+        @brief Response routing active.
+        @param None
+        @return None
+        """
+
         LogTr("Enter cDoipSer.RespRteAct()")
 
         Pl = self.Msg.Pl.AssemPlRteActResp(self.TgtAdr,
@@ -692,6 +1249,13 @@ class cDoipSer:
         LogTr("Exit cDoipSer.RespRteAct()")
 
     def PosAckDiagMsg(self, AckCode):
+        """
+        @fn PosAckDiagMsg
+        @brief Positive acknowledge diagnostic message.
+        @param[in] AckCode Acknowledge code.
+        @return None
+        """
+
         LogTr("Enter cDoipSer.PosAckDiagMsg()")
 
         Pl = self.Msg.Pl.AssemPlDiag(self.SrcAdr, self.TgtAdr, AckCode)
@@ -707,6 +1271,13 @@ class cDoipSer:
         LogTr("Exit cDoipSer.PosAckDiagMsg()")
 
     def NegAckDiagMsg(self, NegAckCode):
+        """
+        @fn NegAckDiagMsg
+        @brief Negative acknowledge diagnostic message.
+        @param[in] NegAckCode Negative acknowledge code.
+        @return None
+        """
+
         LogTr("Enter cDoipSer.NegAckDiagMsg()")
 
         Pl = self.Msg.Pl.AssemPlDiag(self.SrcAdr, self.TgtAdr, NegAckCode)
@@ -722,7 +1293,54 @@ class cDoipSer:
         LogTr("Exit cDoipSer.NegAckDiagMsg()")
 
 class cDoipClt:
+    """
+    @class cDoipClt
+    @brief DoIP client.
+    @param[in] SrcIpAdr Source ip address.
+    - "127.0.0.1" Default value.
+    @param[in] TgtIpAdr Target ip address.
+    - "127.0.0.1" Default value.
+    @param[in] SrcPt Source port.
+    - 9999 Default value.
+    @param[in] TgtPt Target port.
+    - 13400 Default value.
+    @param[in] SrcAdr Source address.
+    - "0E00" Default value.
+    @param[in] TgtAdr Target address.
+    - "1000" Default value.
+    @param[in] FunTgtAdr Function target address.
+    - "E000" Default value.
+    @var self.SrcIpAdr Source ip address.
+    @var self.TgtIpAdr Target ip address.
+    @var self.SrcPt Source port.
+    @var self.TgtPt Target port.
+    @var self.SrcAdr Source address.
+    @var self.TgtAdr Target address.
+    @var self.FunTgtAdr Function target address.
+    @var self.ConnSta Connect status.
+    """
+
     def __init__(self, SrcIpAdr = "127.0.0.1", TgtIpAdr = "127.0.0.1", SrcPt = 9999, TgtPt = 13400, SrcAdr = "0E00", TgtAdr = "1000", FunTgtAdr = "E000"):
+        """
+        @fn __init__
+        @brief Constructor for class cDoipClt.
+        @param[in] SrcAdr Source address.
+        - "127.0.0.1" Default value.
+        @param[in] TgtIpAdr Target ip address.
+        - "127.0.0.1" Default value.
+        @param[in] SrcPt Source port.
+        - 9999 Default value.
+        @param[in] TgtPt Target port.
+        - 13400 Default value.
+        @param[in] SrcAdr Source address.
+        - "0E00" Default value.
+        @param[in] TgtAdr Target address.
+        - "1000" Default value.
+        @param[in] FunTgtAdr Function target address.
+        - "E000" Default value.
+        @return None
+        """
+
         LogTr("Enter cDoipClt.__init__()")
 
         LogDbg(f"SrcIpAdr = {SrcIpAdr}")
@@ -749,12 +1367,24 @@ class cDoipClt:
         self.ConnSta = False # Connect status. True: connected, False: not connected.
         LogDbg(f"self.ConnSta = {self.ConnSta}")
         self.Msg = cMsg()
+        LogDbg(f"self.Msg = {self.Msg}")
         self.MsgPset = cMsgPset()
+        LogDbg(f"self.MsgPset = {self.MsgPset}")
         self.TcpClt = tcp.cTcpClt(SrcIpAdr, TgtIpAdr, SrcPt, TgtPt)
+        LogTr(f"self.TcpClt = {self.TcpClt}")
 
         LogTr("Exit cDoipClt.__init__()")
 
     def Conn(self):
+        """
+        @fn Conn
+        @brief DoIP connect.
+        @param None
+        @return ConnRst Connect resulte.
+        @retval False Socket connect failed.
+        @retval True Socket connect succeeded.
+        """
+
         LogTr("Enter cDoipClt.Conn()")
 
         ConnRst = False
@@ -767,13 +1397,22 @@ class cDoipClt:
             else:
                 LogErr("Socket connect failed.")
         else:
-            LogErr("Connected doip entity!")
+            LogErr("Connected DoIP entity!")
 
         LogTr("Exit cDoipClt.Conn()")
 
         return ConnRst
 
     def DisConn(self):
+        """
+        @fn DisConn
+        @brief DoIP disconnect.
+        @param None
+        @return DisConnRst The resulte of disconnect.
+        @retval False Socket disconnect failed.
+        @retval True Socket disconnect succeeded.
+        """
+
         LogTr("Enter cDoipClt.DisConn()")
 
         DisConnRst = False
@@ -793,22 +1432,36 @@ class cDoipClt:
         return DisConnRst
 
     def Snd(self, Msg):
+        """
+        @fn Snd
+        @brief Send DoIP message.
+        @param[in] Msg DoIP message.
+        @return None
+        """
+
         LogTr("Enter cDoipClt.Snd()")
 
         if self.ConnSta == True:
             self.TcpClt.Snd(Msg)
-            LogInf("Doip send: " + Msg)
+            LogInf("DoIP send: " + Msg)
         else:
             LogErr("Socket not connected, sending failed.")
 
         LogTr("Exit cDoipClt.Snd()")
 
     def Recv(self):
+        """
+        @fn Recv
+        @brief Receive DoIP message.
+        @param None
+        @return DoIP message.
+        """
+
         LogTr("Enter cDoipClt.Recv()")
 
         if self.ConnSta == True:
             Msg = self.TcpClt.Recv()
-            LogInf("Doip recv: " + Msg)
+            LogInf("DoIP recv: " + Msg)
         else:
             Msg = ""
             LogErr("Socket not connected, receiving failed.")
@@ -818,6 +1471,13 @@ class cDoipClt:
         return Msg
 
     def ReqRteAct(self):
+        """
+        @fn ReqRteAct
+        @brief Request routing activation.
+        @param None
+        @return None
+        """
+
         LogTr("Enter cDoipClt.ReqRteAct()")
 
         Pl = self.Msg.Pl.AssemPlRteActReq(self.SrcAdr,
@@ -835,6 +1495,13 @@ class cDoipClt:
         LogTr("Exit cDoipClt.ReqRteAct()")
 
     def RespRteAct(self):
+        """
+        @fn RespRteAct
+        @brief Response routing activation.
+        @param None
+        @return None
+        """
+
         LogTr("Enter cDoipClt.RespRteAct()")
 
         RecvMsg = self.Recv()
@@ -864,6 +1531,13 @@ class cDoipClt:
         return PlTyp, RteActRespCode
 
     def ReqDiag(self, UsrDat):
+        """
+        @fn ReqDiag
+        @brief Request diagnosis.
+        @param[in] UsrDat User data.
+        @return None
+        """
+
         LogTr("Enter cDoipClt.ReqDiag()")
 
         LogDbg(f"UsrDat = {UsrDat}")
@@ -881,6 +1555,14 @@ class cDoipClt:
         LogTr("Exit cDoipClt.ReqDiag()")
 
     def RespDiag(self):
+        """
+        @fn RespDiag
+        @brief Response diagnosis.
+        @param None
+        @return PlTyp Payload type.
+        @return AckCode Acknowledge code.
+        """
+
         LogTr("Enter cDoipClt.RespDiag()")
 
         RecvMsg = self.Recv()
@@ -909,6 +1591,13 @@ class cDoipClt:
         return PlTyp, AckCode
 
     def IsRecvBufMty(self):
+        """
+        @fn IsRecvBufMty
+        @brief Is receive buffer empty.
+        @param None
+        @return Rtn Receive buffer status.
+        """
+
         # LogTr("Enter cDoipClt.IsRecvBufMty()")
 
         if self.ConnSta == True:
@@ -922,6 +1611,13 @@ class cDoipClt:
         return Rtn
 
 def ImitDoipSer():
+    """
+    @fn ImitDoipSer
+    @brief Imitate DoIP server.
+    @param None
+    @return None
+    """
+
     LogTr("Enter ImitDoipSer().")
 
     Ecu = cDoipSer()
@@ -966,6 +1662,13 @@ def ImitDoipSer():
     LogTr("Exit ImitDoipSer().")
 
 def ImitDoipClt():
+    """
+    @fn ImitDoipClt
+    @brief Imitate DoIP client.
+    @param None
+    @return None
+    """
+
     LogTr("Enter ImitDoipClt().")
 
     Tstr = cDoipClt()
