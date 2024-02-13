@@ -1248,15 +1248,15 @@ class cDoipSer:
 
         LogTr("Exit cDoipSer.RespRteAct()")
 
-    def PosAckDiagMsg(self, AckCode):
+    def RespPosDiag(self, AckCode):
         """
-        @fn PosAckDiagMsg
+        @fn RespPosDiag
         @brief Positive acknowledge diagnostic message.
         @param[in] AckCode Acknowledge code.
         @return None
         """
 
-        LogTr("Enter cDoipSer.PosAckDiagMsg()")
+        LogTr("Enter cDoipSer.RespPosDiag()")
 
         Pl = self.Msg.Pl.AssemPlDiag(self.SrcAdr, self.TgtAdr, AckCode)
         LogDbg(f"Pl = {Pl}")
@@ -1268,17 +1268,17 @@ class cDoipSer:
         LogDbg(f"SndMsg = {SndMsg}")
         self.Snd(SndMsg)
 
-        LogTr("Exit cDoipSer.PosAckDiagMsg()")
+        LogTr("Exit cDoipSer.RespPosDiag()")
 
-    def NegAckDiagMsg(self, NegAckCode):
+    def RespNegDiag(self, NegAckCode):
         """
-        @fn NegAckDiagMsg
+        @fn RespNegDiag
         @brief Negative acknowledge diagnostic message.
         @param[in] NegAckCode Negative acknowledge code.
         @return None
         """
 
-        LogTr("Enter cDoipSer.NegAckDiagMsg()")
+        LogTr("Enter cDoipSer.RespNegDiag()")
 
         Pl = self.Msg.Pl.AssemPlDiag(self.SrcAdr, self.TgtAdr, NegAckCode)
         LogDbg(f"Pl = {Pl}")
@@ -1290,7 +1290,29 @@ class cDoipSer:
         LogDbg(f"SndMsg = {SndMsg}")
         self.Snd(SndMsg)
 
-        LogTr("Exit cDoipSer.NegAckDiagMsg()")
+        LogTr("Exit cDoipSer.RespNegDiag()")
+
+    def RespDiagMsg(self, UsrDat):
+        """
+        @fn RespDiagMsg
+        @brief Response diagnostic message.
+        @param[in] UsrDat Contains the actual diagnostic data.
+        @return None
+        """
+
+        LogTr("Enter cDoipSer.RespDiagMsg")
+
+        Pl = self.Msg.Pl.AssemPlDiag(self.SrcAdr, self.TgtAdr, UsrDat)
+        LogDbg(f"Pl = {Pl}")
+        Hdr = self.Msg.Hdr.AssemHdr(self.MsgPset.Hdr.ProtoVer.v2012,
+                                    self.MsgPset.Hdr.PlTyp.DiagMsg,
+                                    "%08X" % (len(Pl) // 2))
+        LogDbg(f"Hdr = {Hdr}")
+        SndMsg = self.Msg.AssemMsg(Hdr, Pl)
+        LogDbg(f"SndMsg = {SndMsg}")
+        self.Snd(SndMsg)
+
+        LogTr("Exit cDoipSer.RespDiagMsg")
 
 class cDoipClt:
     """
@@ -1554,16 +1576,16 @@ class cDoipClt:
 
         LogTr("Exit cDoipClt.ReqDiag()")
 
-    def RespDiag(self):
+    def RespAckDiag(self):
         """
-        @fn RespDiag
-        @brief Response diagnosis.
+        @fn RespAckDiag
+        @brief Response diagnosis. May be a positive or negative response. Waiting for message reception.
         @param None
         @return PlTyp Payload type.
         @return AckCode Acknowledge code.
         """
 
-        LogTr("Enter cDoipClt.RespDiag()")
+        LogTr("Enter cDoipClt.RespAckDiag()")
 
         RecvMsg = self.Recv()
         LogDbg(f"RecvMsg = {RecvMsg}")
@@ -1586,9 +1608,39 @@ class cDoipClt:
         else:
             LogTr("Abnormal response of diagnosis.")
 
-        LogTr("Exit cDoipClt.RespDiag()")
+        LogTr("Exit cDoipClt.RespAckDiag()")
 
         return PlTyp, AckCode
+
+    def RespDiagMsg(self):
+        """
+        @fn RespDiagMsg
+        @brief Response diagnosis message. Waiting for message reception.
+        @param None
+        @return PlTyp Payload type.
+        @return AckCode Acknowledge code.
+        """
+
+        LogTr("Enter cDoipClt.RespDiagMsg()")
+
+        RecvMsg = self.Recv()
+        LogDbg(f"RecvMsg = {RecvMsg}")
+        Hdr, Pl = self.Msg.PrsMsg(RecvMsg)
+        LogDbg(f"Hdr = {Hdr}")
+        LogDbg(f"Pl = {Pl}")
+        ProtoVer, InvProtoVer, PlTyp, PlLen = self.Msg.Hdr.PrsHdr(Hdr)
+        LogDbg(f"ProtoVer = {ProtoVer}")
+        LogDbg(f"InvProtoVer = {InvProtoVer}")
+        LogDbg(f"PlTyp = {PlTyp}")
+        LogDbg(f"PlLen = {PlLen}")
+        SrcAdr, TgtAdr, UsrDat = self.Msg.Pl.PrsPlDiag(Pl)
+        LogDbg(f"SrcAdr = {SrcAdr}")
+        LogDbg(f"TgtAdr = {TgtAdr}")
+        LogDbg(f"UsrDat = {UsrDat}")
+
+        LogTr("Exit cDoipClt.RespDiagMsg()")
+
+        return PlTyp, UsrDat
 
     def IsRecvBufMty(self):
         """
@@ -1657,7 +1709,8 @@ def ImitDoipSer():
                     LogDbg(f"TgtAdr = {TgtAdr}")
                     LogDbg(f"UsrDat = {UsrDat}")
 
-                    Ecu.PosAckDiagMsg("00")
+                    Ecu.RespPosDiag("00")
+                    Ecu.RespDiagMsg("5003003201F4")
 
     LogTr("Exit ImitDoipSer().")
 
@@ -1676,7 +1729,8 @@ def ImitDoipClt():
     Tstr.ReqRteAct()
     Tstr.RespRteAct()
     Tstr.ReqDiag("1003")
-    Tstr.RespDiag()
+    Tstr.RespAckDiag()
+    Tstr.RespDiagMsg()
 
     LogTr("Exit ImitDoipClt().")
 
