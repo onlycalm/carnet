@@ -1,6 +1,6 @@
 ##
 # @file doip.py
-# @brief Doip protocol.
+# @brief DoIP protocol.
 # @details None.
 # @author Calm
 # @date 2023-05-13
@@ -16,17 +16,17 @@ from log import *
 class cMsgPset:
     """
     @class cMsgPset
-    @brief The preset value of doip message.
+    @brief The preset value of DoIP message.
     @details ISO 13400-2-2012.
     @param None
-    @var self.Hdr The header of a doip message.
-    @var self.Pl The payload of a doip message.
+    @var self.Hdr The header of a DoIP message.
+    @var self.Pl The payload of a DoIP message.
     """
 
     class cHdr:
         """
         @fn cHdr
-        @brief The preset value of doip header.
+        @brief The preset value of DoIP header.
         @param None
         @var self.ProtoVer Protocol version number.
         @var self.InvProtoVer Inversion protocol version number.
@@ -641,16 +641,16 @@ class cMsgPset:
 class cMsg:
     """
     @class cMsg
-    @brief Doip message.
+    @brief DoIP message.
     @param None
-    @var self.cHdr Doip message header.
-    @var self.cPl Doip message payload.
+    @var self.cHdr DoIP message header.
+    @var self.cPl DoIP message payload.
     """
 
     class cHdr:
         """
         @class cHdr
-        @brief Doip header message processing.
+        @brief DoIP header message processing.
         @param None
         @var None
         """
@@ -676,7 +676,7 @@ class cMsg:
             @param[in] ProtoVer Protocol version.
             @param[in] PlTyp Payload type.
             @param[in] PlLen Payload length.
-            @return Doip header message.
+            @return DoIP header message.
             """
 
             LogTr("Enter cHdr.AssemHdr()")
@@ -697,8 +697,8 @@ class cMsg:
         def PrsHdr(self, Hdr):
             """
             @fn PrsHdr
-            @brief Parsing doip header message.
-            @param[in] Hdr Doip header message.
+            @brief Parsing DoIP header message.
+            @param[in] Hdr DoIP header message.
             @return ProtoVer
             - ProtoVer Protocol version.
             @return InvProtoVer
@@ -729,7 +729,7 @@ class cMsg:
     class cPl:
         """
         @class cPl
-        @brief Doip payload message processing.
+        @brief DoIP payload message processing.
         @param None
         @var None
         """
@@ -1027,10 +1027,10 @@ class cMsg:
     def AssemMsg(self, Hdr, Pl):
         """
         @fn AssemMsg
-        @brief Assembly doip message
-        @param[in] Hdr Doip header.
-        @param[in] Pl Doip payload.
-        @return Msg Doip message.
+        @brief Assembly DoIP message
+        @param[in] Hdr DoIP header.
+        @param[in] Pl DoIP payload.
+        @return Msg DoIP message.
         """
 
         LogTr("Enter cMsg.AssemMsg()")
@@ -1045,10 +1045,10 @@ class cMsg:
     def PrsMsg(self, Msg):
         """
         @fn PrsMsg
-        @brief Parsing doip message.
-        @param[in] Msg Doip message.
-        @return Hdr Doip header.
-        @return Pl Doip payload.
+        @brief Parsing DoIP message.
+        @param[in] Msg DoIP message.
+        @return Hdr DoIP header.
+        @return Pl DoIP payload.
         """
 
         LogTr("Enter cMsg.PrsMsg()")
@@ -1070,7 +1070,7 @@ class cMsg:
 class cDoipSer:
     """
     @class cDoipSer
-    @brief Doip server.
+    @brief DoIP server.
     @param[in] SrcIpAdr Source ip address.
     - "127.0.0.1" Default value.
     @param[in] SrcPt Source port.
@@ -1133,7 +1133,7 @@ class cDoipSer:
     def Lsn(self):
         """
         @fn Lsn
-        @brief Listen doip connect request.
+        @brief Listen DoIP connect request.
         @param None
         @return None
         """
@@ -1148,7 +1148,7 @@ class cDoipSer:
     def DisConn(self):
         """
         @fn DisConn
-        @brief Doip disconnect
+        @brief DoIP disconnect
         @param None
         @return None
         """
@@ -1167,8 +1167,8 @@ class cDoipSer:
     def Snd(self, Msg):
         """
         @fn Snd
-        @brief Send doip message.
-        @param[in] Msg Doip message.
+        @brief Send DoIP message.
+        @param[in] Msg DoIP message.
         @return None
         """
 
@@ -1176,7 +1176,7 @@ class cDoipSer:
 
         if self.ConnSta == True:
             self.TcpSer.Snd(Msg)
-            LogInf("Doip send: " + Msg)
+            LogInf("DoIP send: " + Msg)
         else:
             LogErr("Socket not connected, sending failed.")
 
@@ -1185,16 +1185,16 @@ class cDoipSer:
     def Recv(self):
         """
         @fn Recv
-        @brief Receive doip message.
+        @brief Receive DoIP message.
         @param None
-        @return Doip message.
+        @return DoIP message.
         """
 
         LogTr("Enter cDoipSer.Recv()")
 
         if self.ConnSta == True:
             Msg = self.TcpSer.Recv()
-            LogInf("Doip recv: " + Msg)
+            LogInf("DoIP recv: " + Msg)
         else:
             Msg = ""
             LogErr("Socket not connected, receiving failed.")
@@ -1295,7 +1295,7 @@ class cDoipSer:
 class cDoipClt:
     """
     @class cDoipClt
-    @brief Doip client.
+    @brief DoIP client.
     @param[in] SrcIpAdr Source ip address.
     - "127.0.0.1" Default value.
     @param[in] TgtIpAdr Target ip address.
@@ -1378,7 +1378,7 @@ class cDoipClt:
     def Conn(self):
         """
         @fn Conn
-        @brief Doip connect.
+        @brief DoIP connect.
         @param None
         @return ConnRst Connect resulte.
         @retval False Socket connect failed.
@@ -1397,7 +1397,7 @@ class cDoipClt:
             else:
                 LogErr("Socket connect failed.")
         else:
-            LogErr("Connected doip entity!")
+            LogErr("Connected DoIP entity!")
 
         LogTr("Exit cDoipClt.Conn()")
 
@@ -1406,7 +1406,7 @@ class cDoipClt:
     def DisConn(self):
         """
         @fn DisConn
-        @brief Doip disconnect.
+        @brief DoIP disconnect.
         @param None
         @return DisConnRst The resulte of disconnect.
         @retval False Socket disconnect failed.
@@ -1434,8 +1434,8 @@ class cDoipClt:
     def Snd(self, Msg):
         """
         @fn Snd
-        @brief Send doip message.
-        @param[in] Msg Doip message.
+        @brief Send DoIP message.
+        @param[in] Msg DoIP message.
         @return None
         """
 
@@ -1443,7 +1443,7 @@ class cDoipClt:
 
         if self.ConnSta == True:
             self.TcpClt.Snd(Msg)
-            LogInf("Doip send: " + Msg)
+            LogInf("DoIP send: " + Msg)
         else:
             LogErr("Socket not connected, sending failed.")
 
@@ -1452,16 +1452,16 @@ class cDoipClt:
     def Recv(self):
         """
         @fn Recv
-        @brief Receive doip message.
+        @brief Receive DoIP message.
         @param None
-        @return Doip message.
+        @return DoIP message.
         """
 
         LogTr("Enter cDoipClt.Recv()")
 
         if self.ConnSta == True:
             Msg = self.TcpClt.Recv()
-            LogInf("Doip recv: " + Msg)
+            LogInf("DoIP recv: " + Msg)
         else:
             Msg = ""
             LogErr("Socket not connected, receiving failed.")
@@ -1613,7 +1613,7 @@ class cDoipClt:
 def ImitDoipSer():
     """
     @fn ImitDoipSer
-    @brief Imitate doip server.
+    @brief Imitate DoIP server.
     @param None
     @return None
     """
@@ -1664,7 +1664,7 @@ def ImitDoipSer():
 def ImitDoipClt():
     """
     @fn ImitDoipClt
-    @brief Imitate doip client.
+    @brief Imitate DoIP client.
     @param None
     @return None
     """
