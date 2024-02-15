@@ -186,6 +186,23 @@ class cTcpSer:
 
         return ChkRst
 
+    def GetConnSta(self):
+        """
+        @fn GetConnSta
+        @brief Get TCP connect state.
+        @param None
+        @return None
+        """
+
+        LogTr("Enter cTcpSer.GetConnSta()")
+
+        ConnSta = self.ConnSta
+        LogDbg(f"ConnSta = {self.ConnSta}")
+
+        LogTr("Exit cTcpSer.GetConnSta()")
+
+        return ConnSta
+
 class cTcpClt:
     """
     @class cTcpClt
@@ -392,6 +409,23 @@ class cTcpClt:
         #LogTr("Exit cTcpClt.IsRecvBufMty()")
 
         return ChkRst
+
+    def GetConnSta(self):
+        """
+        @fn GetConnSta
+        @brief Get TCP connect state.
+        @param None
+        @return None
+        """
+
+        LogTr("Enter cTcpClt.GetConnSta()")
+
+        ConnSta = self.ConnSta
+        LogDbg(f"ConnSta = {self.ConnSta}")
+
+        LogTr("Exit cTcpClt.GetConnSta()")
+
+        return ConnSta
 
 def ImitTcpSer():
     """

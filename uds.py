@@ -2009,19 +2009,102 @@ class cUdsSer:
 
         LogTr("Exit cUdsSer.__init__()")
 
-    def Lsn(self):
+    def IsRecvBufMty(self):
         """
-        @fn Lsn
-        @brief UDS server listening.
+        @fn IsRecvBufMty
+        @brief Check if the UDS receive buffer is empty.
         @param None
+        @return BufSta Receive buffer status.
+        @retval True UDS receive buffer is empty.
+        @retval False UDS receive buffer is non empty.
+        """
+
+        # LogTr("Enter cUdsSer.IsRecvBufMty()")
+
+        BufSta = self.DoipSer.IsRecvBufMty()
+        # LogDbg(f"BufSta = {BufSta}")
+
+        # LogTr("Exit cUdsSer.IsRecvBufMty()")
+
+        return BufSta
+
+    def ReqDiag(self):
+        """
+        @fn ReqDiag
+        @brief Get UDS request diagnostic message.
+        @param None
+        @return Msg UDS message.
+        """
+
+        LogTr("Enter cUdsSer.ReqDiag()")
+
+        Msg = self.DoipSer.Recv()
+        LogDbg(f"Msg = {Msg}")
+
+        LogTr("Exit cUdsSer.ReqDiag()")
+
+        return Msg
+
+    def PrsMsg(self, Msg):
+        """
+        @fn PrsMsg
+        @brief Parsing UDS message.
+        @param Msg UDS message.
+        @return PlTyp Payload type.
+        @return Pl Payload.
+        """
+
+        LogTr("Enter cUdsSer.PrsMsg")
+
+        LogDbg(f"Msg = {Msg}")
+
+        PlTyp, Pl = self.DoipSer.Msg.PrsPl(Msg)
+        LogDbg(f"PlTyp = {PlTyp}")
+        LogDbg(f"Pl = {Pl}")
+
+        LogTr("Exit cUdsSer.PrsMsg")
+
+        return PlTyp, Pl
+
+    def PrsPlDiag(self, Pl):
+        """
+        @fn PrsPlDiag
+        @brief Parsing payload diagnostic.
+        @param[in] Pl Payload message.
+        @return SrcAdr Source address.
+        @return TgtAdr Target address.
+        @return UsrDat User data.
+        """
+
+        LogTr("Enter cUdsSer.PrsPlDiag")
+
+        LogDbg(f"Pl = {Pl}")
+
+        SrcAdr, TgtAdr, UsrDat = self.DoipSer.Msg.Pl.PrsPlDiag(Pl)
+        LogDbg(f"SrcAdr = {SrcAdr}")
+        LogDbg(f"TgtAdr = {TgtAdr}")
+        LogDbg(f"UsrDat = {UsrDat}")
+
+        LogTr("Exit cUdsSer.PrsPlDiag")
+
+        return SrcAdr, TgtAdr, UsrDat
+
+    def RespDiag(self, Msg):
+        """
+        @fn RespDiag
+        @brief UDS response diagnostic message.
+        @param[in] Msg Response diagnostic message.
         @return None
         """
 
-        LogTr("Enter cUdsSer.Lsn()")
+        LogTr("Enter cUdsSer.RespDiag")
 
-        self.DoipSer.Lsn()
+        LogDbg(f"Msg = {Msg}")
 
-        LogTr("Exit cUdsSer.Lsn()")
+        self.DoipSer.RespPosDiag("00")
+        self.DoipSer.RespDiagMsg(Msg)
+
+        LogTr("Exit cUdsClt.RespDiag")
 
 class cUdsClt:
     """
@@ -2045,33 +2128,48 @@ class cUdsClt:
 
         LogTr("Exit cUdsClt.__init__()")
 
-    def Snd(self, Msg):
+    def ReqDiag(self, Msg):
         """
-        @fn Snd
-        @brief UDS client send message.
+        @fn ReqDiag
+        @brief UDS client request diagnosis.
         @param Msg UDS send message.
         @return None
         """
 
-        LogTr("Enter cUdsClt.Snd()")
+        LogTr("Enter cUdsClt.ReqDiag()")
 
         self.DoipClt.ReqDiag(Msg)
 
-        LogTr("Exit cUdsClt.Snd()")
+        LogTr("Exit cUdsClt.ReqDiag()")
 
-    def Recv(self):
+    def RespDiag(self):
         """
-        @fn Recv
+        @fn RespDiag
         @brief UDS client receive message.
         @param None
         @return Receive message.
         """
 
-        LogTr("Enter cUdsClt.Recv()")
+        LogTr("Enter cUdsClt.RespDiag()")
 
-        LogTr("Exit cUdsClt.Recv()")
+        PlTyp, AckCode = self.DoipClt.RespAckDiag()
+        LogDbg(f"PlTyp = {PlTyp}")
+        LogDbg(f"AckCode = {AckCode}")
 
-        return self.DoipClt.RespDiag()
+        if PlTyp == self.DoipClt.MsgPset.Hdr.PlTyp.DiagMsgPosAck:
+            LogTr("Positive diagnostic response.")
+
+            PlTyp, UsrDat = self.DoipClt.RespDiagMsg()
+            LogDbg(f"PlTyp = {PlTyp}")
+            LogDbg(f"UsrDat = {UsrDat}")
+        elif PlTyp == self.DoipClt.MsgPset.Hdr.PlTyp.DiagMsgNegAck:
+            LogTr("Negative diagnostic response.")
+
+            pass
+
+        LogTr("Exit cUdsClt.RespDiag()")
+
+        return PlTyp, AckCode, UsrDat
 
 def ImitUdsSer():
     """
@@ -2081,26 +2179,18 @@ def ImitUdsSer():
     @return None
     """
 
-    LogTr("Enter ImitUdsSer")
+    LogTr("Enter ImitUdsSer.")
 
     Ecu = cUdsSer()
-    Ecu.Lsn()
+    Ecu.DoipSer.LsnRteAct()
 
     while True:
-        if Ecu.DoipSer.IsRecvBufMty() == False:
-            RecvMsg = Ecu.DoipSer.Recv()
+        if Ecu.IsRecvBufMty() == False:
+            RecvMsg = Ecu.ReqDiag()
             LogDbg(f"RecvMsg: {RecvMsg}")
 
             if RecvMsg != "":
-                Hdr, Pl = Ecu.DoipSer.Msg.PrsMsg(RecvMsg)
-                LogDbg(f"Hdr = {Hdr}")
-                LogDbg(f"Pl = {Pl}")
-
-                ProtoVer, InvProtoVer, PlTyp, PlLen = Ecu.DoipSer.Msg.Hdr.PrsHdr(Hdr)
-                LogDbg(f"ProtoVer = {ProtoVer}")
-                LogDbg(f"InvProtoVer = {InvProtoVer}")
-                LogDbg(f"PlTyp = {PlTyp}")
-                LogDbg(f"PlLen = {PlLen}")
+                PlTyp, Pl = Ecu.PrsMsg(RecvMsg)
 
                 if PlTyp == Ecu.DoipSer.MsgPset.Hdr.PlTyp.RteActReq:
                     LogTr("Routing activation request.")
@@ -2115,14 +2205,14 @@ def ImitUdsSer():
                     Ecu.DoipSer.RespRteAct()
                 elif PlTyp == Ecu.DoipSer.MsgPset.Hdr.PlTyp.DiagMsg:
                     LogTr("Diagnostic message.")
-                    SrcAdr, TgtAdr, UsrDat = Ecu.DoipSer.Msg.Pl.PrsPlDiag(Pl)
+                    SrcAdr, TgtAdr, UsrDat = Ecu.PrsPlDiag(Pl)
                     LogDbg(f"SrcAdr = {SrcAdr}")
                     LogDbg(f"TgtAdr = {TgtAdr}")
                     LogDbg(f"UsrDat = {UsrDat}")
 
-                    Ecu.DoipSer.PosAckDiagMsg("00")
+                    Ecu.RespDiag("5003003201F4")
 
-    LogTr("Exit ImitUdsSer")
+    LogTr("Exit ImitUdsSer.")
 
 def ImitUdsClt():
     """
@@ -2132,16 +2222,18 @@ def ImitUdsClt():
     @return None
     """
 
-    LogTr("Enter ImitUdsClt")
+    LogTr("Enter ImitUdsClt.")
 
     Tstr = cUdsClt()
-    Tstr.DoipClt.Conn()
     Tstr.DoipClt.ReqRteAct()
     Tstr.DoipClt.RespRteAct()
-    Tstr.Snd("1003")
-    Tstr.Recv()
+    Tstr.ReqDiag("1003")
+    PlTyp, AckCode, UsrDat = Tstr.RespDiag()
+    LogDbg(f"PlTyp = {PlTyp}")
+    LogDbg(f"AckCode = {AckCode}")
+    LogDbg(f"UsrDat = {UsrDat}")
 
-    LogTr("Exit ImitUdsClt")
+    LogTr("Exit ImitUdsClt.")
 
 if __name__ == "__main__":
     LogTr("__main__")

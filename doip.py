@@ -1053,7 +1053,7 @@ class cMsg:
 
         LogTr("Enter cMsg.PrsMsg()")
 
-        LogDbg(Msg)
+        LogDbg(f"Msg = {Msg}")
 
         if len(Msg) // 2 < 8:
             raise DatLenErr
@@ -1066,6 +1066,33 @@ class cMsg:
         LogTr("Exit cMsg.PrsMsg()")
 
         return Hdr, Pl
+
+    def PrsPl(self, Msg):
+        """
+        @fn PrsPl
+        @brief Parsing DoIP message. Get payload type and payload.
+        @param[in] Msg DoIP message.
+        @return PlTyp Payload type.
+        @return Pl Payload.
+        """
+
+        LogTr("Enter cMsg.PrsPl")
+
+        LogDbg(f"Msg = {Msg}")
+
+        Hdr, Pl = self.PrsMsg(Msg)
+        LogDbg(f"Hdr = {Hdr}")
+        LogDbg(f"Pl = {Pl}")
+
+        ProtoVer, InvProtoVer, PlTyp, PlLen = self.Hdr.PrsHdr(Hdr)
+        LogDbg(f"ProtoVer = {ProtoVer}")
+        LogDbg(f"InvProtoVer = {InvProtoVer}")
+        LogDbg(f"PlTyp = {PlTyp}")
+        LogDbg(f"PlLen = {PlLen}")
+
+        LogTr("Exit cMsg.PrsPl")
+
+        return PlTyp, Pl
 
 class cDoipSer:
     """
@@ -1130,20 +1157,43 @@ class cDoipSer:
 
         LogTr("Exit cDoipSer.__init__()")
 
-    def Lsn(self):
+    def LsnRteAct(self):
         """
-        @fn Lsn
-        @brief Listen DoIP connect request.
+        @fn LsnRteAct
+        @brief Listen for route activation request.
         @param None
         @return None
         """
 
-        LogTr("Enter cDoipSer.Lsn()")
+        LogTr("Enter cDoipSer.LsnRteAct()")
 
         self.TcpSer.Lsn()
-        self.ConnSta = True
 
-        LogTr("Exit cDoipSer.Lsn()")
+        if self.TcpSer.GetConnSta() == True:
+            LogTr("TCP socket connected.")
+            RecvMsg = self.Recv()
+            LogDbg(f"RecvMsg = {RecvMsg}")
+
+            if RecvMsg != "":
+                PlTyp, Pl = self.Msg.PrsPl(RecvMsg)
+                LogDbg(f"PlTyp = {PlTyp}")
+                LogDbg(f"Pl = {Pl}")
+
+                if PlTyp == self.MsgPset.Hdr.PlTyp.RteActReq:
+                    LogTr("Routing activation request.")
+                    SrcAdr, ActTyp, Rsv, OemSpec = self.Msg.Pl.PrsPlRteActReq(Pl)
+                    LogDbg(f"SrcAdr = {SrcAdr}")
+                    LogDbg(f"ActTyp = {ActTyp}")
+                    LogDbg(f"Rsv = {Rsv}")
+                    LogDbg(f"OemSpec = {OemSpec}")
+                    self.TgtAdr = SrcAdr
+                    LogDbg(f"self.TgtAdr = {self.TgtAdr}")
+
+                    self.RespRteAct()
+                    self.ConnSta = True
+                    LogDbg(f"self.ConnSta = {self.ConnSta}")
+
+        LogTr("Exit cDoipSer.LsnRteAct()")
 
     def DisConn(self):
         """
@@ -1174,7 +1224,7 @@ class cDoipSer:
 
         LogTr("Enter cDoipSer.Snd()")
 
-        if self.ConnSta == True:
+        if self.TcpSer.GetConnSta() == True:
             self.TcpSer.Snd(Msg)
             LogInf("DoIP send: " + Msg)
         else:
@@ -1192,7 +1242,9 @@ class cDoipSer:
 
         LogTr("Enter cDoipSer.Recv()")
 
-        if self.ConnSta == True:
+        if self.TcpSer.GetConnSta() == True:
+            LogTr("Socket connected.")
+
             Msg = self.TcpSer.Recv()
             LogInf("DoIP recv: " + Msg)
         else:
@@ -1206,22 +1258,24 @@ class cDoipSer:
     def IsRecvBufMty(self):
         """
         @fn IsRecvBufMty
-        @brief Is the receive cache empty.
+        @brief Check if the UDS receive buffer is empty.
         @param None
         @return Receive buffer status.
+        @retval DoIP receive buffer is empty.
+        @retval DoIP receive buffer is non empty.
         """
 
         # LogTr("Enter cDoipSer.IsRecvBufMty()")
 
         if self.ConnSta == True:
-            RecvBufSta = self.TcpSer.IsRecvBufMty()
+            BufSta = self.TcpSer.IsRecvBufMty()
         else:
-            RecvBufSta = None
+            BufSta = None
             LogErr("Socket not connected.")
 
         # LogTr("Exit cDoipSer.IsRecvBufMty()")
 
-        return RecvBufSta
+        return BufSta
 
     def RespRteAct(self):
         """
@@ -1339,7 +1393,7 @@ class cDoipClt:
     @var self.SrcAdr Source address.
     @var self.TgtAdr Target address.
     @var self.FunTgtAdr Function target address.
-    @var self.ConnSta Connect status.
+    @var self.RteActSta Routine active status.
     """
 
     def __init__(self, SrcIpAdr = "127.0.0.1", TgtIpAdr = "127.0.0.1", SrcPt = 9999, TgtPt = 13400, SrcAdr = "0E00", TgtAdr = "1000", FunTgtAdr = "E000"):
@@ -1386,8 +1440,8 @@ class cDoipClt:
         LogDbg(f"self.TgtAdr = {self.TgtAdr}")
         self.FunTgtAdr = FunTgtAdr
         LogDbg(f"self.FunTgtAdr = {self.FunTgtAdr}")
-        self.ConnSta = False # Connect status. True: connected, False: not connected.
-        LogDbg(f"self.ConnSta = {self.ConnSta}")
+        self.RteActSta = False # Routine active status. True: connected, False: not connected.
+        LogDbg(f"self.RteActSta = {self.RteActSta}")
         self.Msg = cMsg()
         LogDbg(f"self.Msg = {self.Msg}")
         self.MsgPset = cMsgPset()
@@ -1396,34 +1450,6 @@ class cDoipClt:
         LogTr(f"self.TcpClt = {self.TcpClt}")
 
         LogTr("Exit cDoipClt.__init__()")
-
-    def Conn(self):
-        """
-        @fn Conn
-        @brief DoIP connect.
-        @param None
-        @return ConnRst Connect resulte.
-        @retval False Socket connect failed.
-        @retval True Socket connect succeeded.
-        """
-
-        LogTr("Enter cDoipClt.Conn()")
-
-        ConnRst = False
-
-        if self.ConnSta == False:
-            if self.TcpClt.Conn():
-                LogScs("Socket connection succeeded.")
-                self.ConnSta = True
-                ConnRst = True
-            else:
-                LogErr("Socket connect failed.")
-        else:
-            LogErr("Connected DoIP entity!")
-
-        LogTr("Exit cDoipClt.Conn()")
-
-        return ConnRst
 
     def DisConn(self):
         """
@@ -1439,10 +1465,10 @@ class cDoipClt:
 
         DisConnRst = False
 
-        if self.ConnSta == True:
+        if self.RteActSta == True:
             if self.TcpClt.DisConn():
                 LogScs("Socket connection disconnected.")
-                self.ConnSta = False
+                self.RteActSta = False
                 DisConnRst = True
             else:
                 LogErr("Socket disconnection failed.")
@@ -1463,7 +1489,9 @@ class cDoipClt:
 
         LogTr("Enter cDoipClt.Snd()")
 
-        if self.ConnSta == True:
+        if self.TcpClt.GetConnSta() == True:
+            LogTr("Socket connected.")
+
             self.TcpClt.Snd(Msg)
             LogInf("DoIP send: " + Msg)
         else:
@@ -1481,12 +1509,13 @@ class cDoipClt:
 
         LogTr("Enter cDoipClt.Recv()")
 
-        if self.ConnSta == True:
+        if self.TcpClt.GetConnSta() == True:
+            LogTr("Socket connected.")
+
             Msg = self.TcpClt.Recv()
             LogInf("DoIP recv: " + Msg)
         else:
-            Msg = ""
-            LogErr("Socket not connected, receiving failed.")
+            LogErr("Socket not connected, sending failed.")
 
         LogTr("Exit cDoipClt.Recv()")
 
@@ -1502,19 +1531,29 @@ class cDoipClt:
 
         LogTr("Enter cDoipClt.ReqRteAct()")
 
-        Pl = self.Msg.Pl.AssemPlRteActReq(self.SrcAdr,
-                                          self.MsgPset.Pl.RteActReq.ActTyp.Dflt,
-                                          self.MsgPset.Pl.RteActReq.Rsv.Dflt)
-        LogDbg(f"Pl = {Pl}")
-        Hdr = self.Msg.Hdr.AssemHdr(self.MsgPset.Hdr.ProtoVer.v2012,
-                                    self.MsgPset.Hdr.PlTyp.RteActReq,
-                                    "%08X" % (len(Pl) // 2))
-        LogDbg(f"Hdr = {Hdr}")
-        SndMsg = self.Msg.AssemMsg(Hdr, Pl)
-        LogDbg(f"SndMsg = {SndMsg}")
-        self.Snd(SndMsg)
+        if self.TcpClt.Conn():
+            LogScs("Socket connection succeeded.")
+
+            Pl = self.Msg.Pl.AssemPlRteActReq(self.SrcAdr,
+                                              self.MsgPset.Pl.RteActReq.ActTyp.Dflt,
+                                              self.MsgPset.Pl.RteActReq.Rsv.Dflt)
+            LogDbg(f"Pl = {Pl}")
+            Hdr = self.Msg.Hdr.AssemHdr(self.MsgPset.Hdr.ProtoVer.v2012,
+                                        self.MsgPset.Hdr.PlTyp.RteActReq,
+                                        "%08X" % (len(Pl) // 2))
+            LogDbg(f"Hdr = {Hdr}")
+            SndMsg = self.Msg.AssemMsg(Hdr, Pl)
+            LogDbg(f"SndMsg = {SndMsg}")
+            self.Snd(SndMsg)
+            LogTr("Request routing activation.")
+            ReqRst = True
+        else:
+            LogErr("Socket connect failed.")
+            ReqRst = False
 
         LogTr("Exit cDoipClt.ReqRteAct()")
+
+        return ReqRst
 
     def RespRteAct(self):
         """
@@ -1528,14 +1567,7 @@ class cDoipClt:
 
         RecvMsg = self.Recv()
         LogDbg(f"RecvMsg = {RecvMsg}")
-        Hdr, Pl = self.Msg.PrsMsg(RecvMsg)
-        LogDbg(f"Hdr = {Hdr}")
-        LogDbg(f"Pl = {Pl}")
-        ProtoVer, InvProtoVer, PlTyp, PlLen = self.Msg.Hdr.PrsHdr(Hdr)
-        LogDbg(f"ProtoVer = {ProtoVer}")
-        LogDbg(f"InvProtoVer = {InvProtoVer}")
-        LogDbg(f"PlTyp = {PlTyp}")
-        LogDbg(f"PlLen = {PlLen}")
+        PlTyp, Pl = self.Msg.PrsPl(RecvMsg)
         TstrLgAdr, EntyLgAdr, RteActRespCode, Rsv, OemSpec = self.Msg.Pl.PrsPlRteActResp(Pl)
         LogDbg(f"TstrLgAdr = {TstrLgAdr}")
         LogDbg(f"EntyLgAdr = {EntyLgAdr}")
@@ -1545,8 +1577,14 @@ class cDoipClt:
 
         if RteActRespCode == self.MsgPset.Pl.RteActResp.RteActRespCode.RteScsAct:
             LogTr("Route activation succeeded.")
+
+            self.RteActSta = True
+            LogDbg(f"self.RteActSta = {self.RteActSta}")
         else:
             LogTr("Route activation failed.")
+
+            self.RteActSta = False
+            LogDbg(f"self.RteActSta = {self.RteActSta}")
 
         LogTr("Exit cDoipClt.RespRteAct()")
 
@@ -1564,17 +1602,27 @@ class cDoipClt:
 
         LogDbg(f"UsrDat = {UsrDat}")
 
-        Pl = self.Msg.Pl.AssemPlDiag(self.SrcAdr, self.TgtAdr, UsrDat)
-        LogDbg(f"Pl = {Pl}")
-        Hdr = self.Msg.Hdr.AssemHdr(self.MsgPset.Hdr.ProtoVer.v2012,
-                                    self.MsgPset.Hdr.PlTyp.DiagMsg,
-                                    "%08X" % (len(Pl) // 2))
-        LogDbg(f"Hdr = {Hdr}")
-        SndMsg = self.Msg.AssemMsg(Hdr, Pl)
-        LogDbg(f"SndMsg = {SndMsg}")
-        self.Snd(SndMsg)
+        if self.RteActSta == True:
+            LogTr("Request diagnosis.")
+
+            Pl = self.Msg.Pl.AssemPlDiag(self.SrcAdr, self.TgtAdr, UsrDat)
+            LogDbg(f"Pl = {Pl}")
+            Hdr = self.Msg.Hdr.AssemHdr(self.MsgPset.Hdr.ProtoVer.v2012,
+                                        self.MsgPset.Hdr.PlTyp.DiagMsg,
+                                        "%08X" % (len(Pl) // 2))
+            LogDbg(f"Hdr = {Hdr}")
+            SndMsg = self.Msg.AssemMsg(Hdr, Pl)
+            LogDbg(f"SndMsg = {SndMsg}")
+            self.Snd(SndMsg)
+            ReqRst = True
+        else:
+            LogTr("Request diagnosis failed.")
+
+            ReqRst = False
 
         LogTr("Exit cDoipClt.ReqDiag()")
+
+        return ReqRst
 
     def RespAckDiag(self):
         """
@@ -1587,26 +1635,24 @@ class cDoipClt:
 
         LogTr("Enter cDoipClt.RespAckDiag()")
 
-        RecvMsg = self.Recv()
-        LogDbg(f"RecvMsg = {RecvMsg}")
-        Hdr, Pl = self.Msg.PrsMsg(RecvMsg)
-        LogDbg(f"Hdr = {Hdr}")
-        LogDbg(f"Pl = {Pl}")
-        ProtoVer, InvProtoVer, PlTyp, PlLen = self.Msg.Hdr.PrsHdr(Hdr)
-        LogDbg(f"ProtoVer = {ProtoVer}")
-        LogDbg(f"InvProtoVer = {InvProtoVer}")
-        LogDbg(f"PlTyp = {PlTyp}")
-        LogDbg(f"PlLen = {PlLen}")
-        SrcAdr, TgtAdr, AckCode, DiagMsg = self.Msg.Pl.PrsPlPosDiag(Pl)
-        LogDbg(f"SrcAdr = {SrcAdr}")
-        LogDbg(f"TgtAdr = {TgtAdr}")
-        LogDbg(f"AckCode = {AckCode}")
-        LogDbg(f"DiagMsg = {DiagMsg}")
+        if self.RteActSta == True:
+            LogTr("Response diagnosis response.")
 
-        if PlTyp == self.MsgPset.Hdr.PlTyp.DiagMsgPosAck:
-            LogTr("Diagnostic normal response.")
+            RecvMsg = self.Recv()
+            LogDbg(f"RecvMsg = {RecvMsg}")
+            PlTyp, Pl = self.Msg.PrsPl(RecvMsg)
+            SrcAdr, TgtAdr, AckCode, DiagMsg = self.Msg.Pl.PrsPlPosDiag(Pl)
+            LogDbg(f"SrcAdr = {SrcAdr}")
+            LogDbg(f"TgtAdr = {TgtAdr}")
+            LogDbg(f"AckCode = {AckCode}")
+            LogDbg(f"DiagMsg = {DiagMsg}")
+
+            if PlTyp == self.MsgPset.Hdr.PlTyp.DiagMsgPosAck:
+                LogTr("Positive diagnostic response.")
+            elif PlTyp == self.MsgPset.Hdr.PlTyp.DiagMsgNegAck:
+                LogTr("Negative diagnostic response.")
         else:
-            LogTr("Abnormal response of diagnosis.")
+            LogTr("Response diagnosis response failed.")
 
         LogTr("Exit cDoipClt.RespAckDiag()")
 
@@ -1623,20 +1669,18 @@ class cDoipClt:
 
         LogTr("Enter cDoipClt.RespDiagMsg()")
 
-        RecvMsg = self.Recv()
-        LogDbg(f"RecvMsg = {RecvMsg}")
-        Hdr, Pl = self.Msg.PrsMsg(RecvMsg)
-        LogDbg(f"Hdr = {Hdr}")
-        LogDbg(f"Pl = {Pl}")
-        ProtoVer, InvProtoVer, PlTyp, PlLen = self.Msg.Hdr.PrsHdr(Hdr)
-        LogDbg(f"ProtoVer = {ProtoVer}")
-        LogDbg(f"InvProtoVer = {InvProtoVer}")
-        LogDbg(f"PlTyp = {PlTyp}")
-        LogDbg(f"PlLen = {PlLen}")
-        SrcAdr, TgtAdr, UsrDat = self.Msg.Pl.PrsPlDiag(Pl)
-        LogDbg(f"SrcAdr = {SrcAdr}")
-        LogDbg(f"TgtAdr = {TgtAdr}")
-        LogDbg(f"UsrDat = {UsrDat}")
+        if self.RteActSta == True:
+            LogTr("Response diagnosis message.")
+
+            RecvMsg = self.Recv()
+            LogDbg(f"RecvMsg = {RecvMsg}")
+            PlTyp, Pl = self.Msg.PrsPl(RecvMsg)
+            SrcAdr, TgtAdr, UsrDat = self.Msg.Pl.PrsPlDiag(Pl)
+            LogDbg(f"SrcAdr = {SrcAdr}")
+            LogDbg(f"TgtAdr = {TgtAdr}")
+            LogDbg(f"UsrDat = {UsrDat}")
+        else:
+            LogTr("Response diagnosis message failed.")
 
         LogTr("Exit cDoipClt.RespDiagMsg()")
 
@@ -1652,7 +1696,7 @@ class cDoipClt:
 
         # LogTr("Enter cDoipClt.IsRecvBufMty()")
 
-        if self.ConnSta == True:
+        if self.RteActSta == True:
             Rtn = self.TcpClt.IsRecvBufMty()
         else:
             Rtn = None
@@ -1673,7 +1717,7 @@ def ImitDoipSer():
     LogTr("Enter ImitDoipSer().")
 
     Ecu = cDoipSer()
-    Ecu.Lsn()
+    Ecu.LsnRteAct()
 
     while True:
         if Ecu.IsRecvBufMty() == False:
@@ -1681,15 +1725,7 @@ def ImitDoipSer():
             LogDbg(f"RecvMsg: {RecvMsg}")
 
             if RecvMsg != "":
-                Hdr, Pl = Ecu.Msg.PrsMsg(RecvMsg)
-                LogDbg(f"Hdr = {Hdr}")
-                LogDbg(f"Pl = {Pl}")
-
-                ProtoVer, InvProtoVer, PlTyp, PlLen = Ecu.Msg.Hdr.PrsHdr(Hdr)
-                LogDbg(f"ProtoVer = {ProtoVer}")
-                LogDbg(f"InvProtoVer = {InvProtoVer}")
-                LogDbg(f"PlTyp = {PlTyp}")
-                LogDbg(f"PlLen = {PlLen}")
+                PlTyp, Pl = Ecu.Msg.PrsPl(RecvMsg)
 
                 if PlTyp == Ecu.MsgPset.Hdr.PlTyp.RteActReq:
                     LogTr("Routing activation request.")
@@ -1725,12 +1761,13 @@ def ImitDoipClt():
     LogTr("Enter ImitDoipClt().")
 
     Tstr = cDoipClt()
-    Tstr.Conn()
     Tstr.ReqRteAct()
     Tstr.RespRteAct()
     Tstr.ReqDiag("1003")
-    Tstr.RespAckDiag()
-    Tstr.RespDiagMsg()
+    PlTyp, AckCode = Tstr.RespAckDiag()
+
+    if PlTyp == Tstr.MsgPset.Hdr.PlTyp.DiagMsgPosAck:
+        Tstr.RespDiagMsg()
 
     LogTr("Exit ImitDoipClt().")
 
