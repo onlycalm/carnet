@@ -2420,16 +2420,29 @@ class cUdsSer:
 
         LogDbg(f"Msg = {Msg}")
 
-        Sid = hex(int(Msg[:2], 16) & 0xBF)[2:]
+        #Sid = hex(int(Msg[:2], 16) & 0xBF)[2:]
+        Sid = Msg[:2]
         LogDbg(f"Sid = {Sid}")
+        RespSid = hex(int(Sid, 16) | 0x40)[2:]
+        LogDbg(f"RespSid = {RespSid}")
         SubFun = Msg[2:4]
         LogDbg(f"SubFun = {SubFun}")
 
         if Sid == self.MsgPset.Sid.DiagSessCtrl:
+            # Session parameter record.
+            P2SerMax = "0032"
+            LogDbg(f"P2SerMax = {P2SerMax}")
+            P2_SerMax = "01F4"
+            LogDbg(f"P2_SerMax = {P2_SerMax}")
+            SessParamRec = P2SerMax + P2_SerMax
+            LogDbg(f"SessParamRec = {SessParamRec}")
             self.DoipSer.RespPosDiag("00")
-            self.DoipSer.RespDiagMsg(Msg)
+            self.DoipSer.RespDiagMsg(RespSid + SubFun + SessParamRec)
         elif Sid == self.MsgPset.Sid.EcuRst:
-            pass
+            # Power down time.
+            PwrDwnTm = "FF" # Indicate a failure or time not available.
+            self.DoipSer.RespPosDiag("00")
+            self.DoipSer.RespDiagMsg(RespSid + SubFun + PwrDwnTm)
 
         LogTr("Exit cUdsClt.RespDiag")
 
@@ -2537,7 +2550,7 @@ def ImitUdsSer():
                     LogDbg(f"TgtAdr = {TgtAdr}")
                     LogDbg(f"UsrDat = {UsrDat}")
 
-                    Ecu.RespDiag("5003003201F4")
+                    Ecu.RespDiag(UsrDat)
 
     LogTr("Exit ImitUdsSer.")
 
@@ -2555,6 +2568,11 @@ def ImitUdsClt():
     Tstr.DoipClt.ReqRteAct()
     Tstr.DoipClt.RespRteAct()
     Tstr.ReqDiag("1003")
+    PlTyp, AckCode, UsrDat = Tstr.RespDiag()
+    LogDbg(f"PlTyp = {PlTyp}")
+    LogDbg(f"AckCode = {AckCode}")
+    LogDbg(f"UsrDat = {UsrDat}")
+    Tstr.ReqDiag("1101")
     PlTyp, AckCode, UsrDat = Tstr.RespDiag()
     LogDbg(f"PlTyp = {PlTyp}")
     LogDbg(f"AckCode = {AckCode}")

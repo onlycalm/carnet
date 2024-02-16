@@ -935,7 +935,7 @@ class cMsg:
             # Diagnostic message data.
             # Mandatory.
             UsrDat = Pl[8:]
-            LogDbg("UsrDat = {UsrDat}")
+            LogDbg(f"UsrDat = {UsrDat}")
 
             LogTr("Exit cPl.PrsPlDiag()")
 
