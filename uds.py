@@ -530,7 +530,7 @@ class cMsgPset:
                 self.VhcMfrSpec = "40~5F"
                 LogDbg(f"self.VhcMfrSpec = {self.VhcMfrSpec}")
                 self.SysSplrSpec = "60~7E"
-                LogDbg(f"self.systemSupplierSpecific = {self.systemSupplierSpecific}")
+                LogDbg(f"self.SysSplrSpec = {self.SysSplrSpec}")
                 self.IsoRsv2 = "7F"
                 LogDbg(f"self.IsoRsv2 = {self.IsoRsv2}")
 
@@ -864,26 +864,6 @@ class cMsgPset:
 
                 LogTr("Exit cWrMemByAdr.__init__()")
 
-        class cClrDiagInfo:
-            """
-            @class cClrDiagInfo
-            @brief The preset value of cClrDiagInfo.
-            @param None
-            @var None
-            """
-
-            def __init__(self):
-                """
-                @fn __init__
-                @brief Constructor for class cClrDiagInfo.
-                @param None
-                @return None
-                """
-
-                LogTr("Enter cClrDiagInfo.__init__()")
-
-                LogTr("Exit cClrDiagInfo.__init__()")
-
         class cRdDtcInfo:
             """
             @class cRdDtcInfo
@@ -957,7 +937,7 @@ class cMsgPset:
                 LogTr("Enter cRdDtcInfo.__init__()")
 
                 self.IsoRsv = "00"
-                LogDbg(f"self.IsoRsv = {self.Rsv}")
+                LogDbg(f"self.IsoRsv = {self.IsoRsv}")
                 self.RptNumOfDtcByStaMsk = "01"
                 LogDbg(f"self.RptNumOfDtcByStaMsk = {self.RptNumOfDtcByStaMsk}")
                 self.RptDtcByStaMsk = "02"
@@ -1224,9 +1204,7 @@ class cMsgPset:
             self.WrDatById = self.cWrDatById()
             LogDbg(f"self.WrDatById = {self.WrDatById}")
             self.WrMemByAdr = self.cWrMemByAdr()
-            LogDbg(f"self.WrMemByAdr = self.WrMemByAdr")
-            self.ClrDiagInfo = self.cClrDiagInfo()
-            LogDbg(f"self.ClrDiagInfo = {self.ClrDiagInfo}")
+            LogDbg(f"self.WrMemByAdr = {self.WrMemByAdr}")
             self.RdDtcInfo = self.cRdDtcInfo()
             LogDbg(f"self.RdDtcInfo = {self.RdDtcInfo}")
             self.IoCtrlById = self.cIoCtrlById()
@@ -1906,6 +1884,346 @@ class cMsgPset:
 
                 LogTr("Exit cWrMemByAdr.__init__()")
 
+        class cClrDiagInfo:
+            """
+            @class cClrDiagInfo
+            @brief The preset value of cClrDiagInfo.
+            @param None
+            @var None
+            """
+
+            def __init__(self):
+                """
+                @fn __init__
+                @brief Constructor for class cClrDiagInfo.
+                @param None
+                @return None
+                """
+
+                LogTr("Enter cClrDiagInfo.__init__()")
+
+                LogTr("Exit cClrDiagInfo.__init__()")
+
+        class cRdDtcInfo:
+            """
+            @class cRdDtcInfo
+            @brief The preset value of cRdDtcInfo.
+            @param None
+            @var self.SubFunNSpt Subfunction not supported.
+            - "12" Protocol definition value.
+            @var self.IncorMsgLenOrInvFmt Incorrect message length or invalid format.
+            - "13" Protocol definition value.
+            @var self.ReqOtRng Request out of range.
+            - "31" Protocol definition value.
+            """
+
+            def __init__(self):
+                """
+                @fn __init__
+                @brief Constructor for class cRdDtcInfo.
+                @param None
+                @return None
+                """
+
+                LogTr("Enter cRdDtcInfo.__init__()")
+
+                self.SubFunNSpt = "12"
+                LogDbg(f"self.SubFunNSpt = {self.SubFunNSpt}")
+                self.IncorMsgLenOrInvFmt = "13"
+                LogDbg(f"self.IncorMsgLenOrInvFmt = {self.IncorMsgLenOrInvFmt}")
+                self.ReqOtRng = "31"
+                LogDbg(f"self.ReqOtRng = {self.ReqOtRng}")
+
+                LogTr("Exit cRdDtcInfo.__init__()")
+
+        class cIoCtrlById:
+            """
+            @class cIoCtrlById
+            @brief The preset value of cIoCtrlById.
+            @param None
+            @var self.IncorMsgLenOrInvFmt Incorrect message length or invalid format.
+            - "13" Protocol definition value.
+            @var self.CndNCor Condition not correct.
+            - "22" Protocol definition value.
+            @var self.ReqOtRng Request out of range.
+            - "31" Protocol definition value.
+            @var self.SecAccD Security access denied.
+            - "33" Protocol definition value.
+            """
+
+            def __init__(self):
+                """
+                @fn __init__
+                @brief Constructor for class cIoCtrlById.
+                @param None
+                @return None
+                """
+
+                LogTr("Enter cIoCtrlById.__init__()")
+
+                self.IncorMsgLenOrInvFmt = "13"
+                LogDbg(f"self.IncorMsgLenOrInvFmt = {self.IncorMsgLenOrInvFmt}")
+                self.CndNCor = "22"
+                LogDbg(f"self.CndNCor = {self.CndNCor}")
+                self.ReqOtRng = "31"
+                LogDbg(f"self.ReqOtRng = {self.ReqOtRng}")
+                self.SecAccD = "33"
+                LogDbg(f"self.SecAccD = {self.SecAccD}")
+
+                LogTr("Exit cIoCtrlById.__init__()")
+
+        class cRtCtrl:
+            """
+            @class cRtCtrl
+            @brief The preset value of cRtCtrl.
+            @param None
+            @var self.CndNCor Condition not correct.
+            - "12" Protocol definition value.
+            @var self.IncorMsgLenOrInvFmt Incorrect message length or invalid format.
+            - "13" Protocol definition value.
+            @var self.CndNCor Condition not correct.
+            - "22" Protocol definition value.
+            @var self.ReqSeqErr Request sequence error.
+            - "24" Protocol definition value.
+            @var self.ReqOtRng Request out of range.
+            - "31" Protocol definition value.
+            @var self.SecAccD Security access denied.
+            - "33" Protocol definition value.
+            @var self.GenProgFail General Programming failure.
+            - "72" Protocol definition value.
+            """
+
+            def __init__(self):
+                """
+                @fn __init__
+                @brief Constructor for class cRtCtrl.
+                @param None
+                @return None
+                """
+
+                LogTr("Enter cRtCtrl.__init__()")
+
+                self.SubFunNSpt = "12"
+                LogDbg(f"self.SubFunNSpt = {self.SubFunNSpt}")
+                self.IncorMsgLenOrInvFmt = "13"
+                LogDbg(f"self.IncorMsgLenOrInvFmt = {self.IncorMsgLenOrInvFmt}")
+                self.CndNCor = "22"
+                LogDbg(f"self.CndNCor = {self.CndNCor}")
+                self.ReqSeqErr = "24"
+                LogDbg(f"self.ReqSeqErr = {self.ReqSeqErr}")
+                self.ReqOtRng = "31"
+                LogDbg(f"self.ReqOtRng = {self.ReqOtRng}")
+                self.SecAccD = "33"
+                LogDbg(f"self.SecAccD = {self.SecAccD}")
+                self.GenProgFail = "72"
+                LogDbg(f"self.GenProgFail = {self.GenProgFail}")
+
+                LogTr("Exit cRtCtrl.__init__()")
+
+        class cReqDwnld:
+            """
+            @class cReqDwnld
+            @brief The preset value of cReqDwnld.
+            @param None
+            @var self.IncorMsgLenOrInvFmt Incorrect message length or invalid format.
+            - "13" Protocol definition value.
+            @var self.CndNCor Condition not correct.
+            - "22" Protocol definition value.
+            @var self.ReqOtRng Request out of range.
+            - "31" Protocol definition value.
+            @var self.SecAccD Security access denied.
+            - "33" Protocol definition value.
+            @var self.UlDlNAcpt Upload download not accepted.
+            - "70" Protocol definition value.
+            """
+
+            def __init__(self):
+                """
+                @fn __init__
+                @brief Constructor for class cReqDwnld.
+                @param None
+                @return None
+                """
+
+                LogTr("Enter cReqDwnld.__init__()")
+
+                self.IncorMsgLenOrInvFmt = "13"
+                LogDbg(f"self.IncorMsgLenOrInvFmt = {self.IncorMsgLenOrInvFmt}")
+                self.CndNCor = "22"
+                LogDbg(f"self.CndNCor = {self.CndNCor}")
+                self.ReqOtRng = "31"
+                LogDbg(f"self.ReqOtRng = {self.ReqOtRng}")
+                self.SecAccD = "33"
+                LogDbg(f"self.SecAccD = {self.SecAccD}")
+                self.UlDlNAcpt = "70"
+                LogDbg(f"self.UlDlNAcpt = {self.UlDlNAcpt}")
+
+                LogTr("Exit cReqDwnld.__init__()")
+
+        class cReqUpld:
+            """
+            @class cReqUpld
+            @brief The preset value of cReqUpld.
+            @param None
+            @var self.IncorMsgLenOrInvFmt Incorrect message length or invalid format.
+            - "13" Protocol definition value.
+            @var self.CndNCor Condition not correct.
+            - "22" Protocol definition value.
+            @var self.ReqOtRng Request out of range.
+            - "31" Protocol definition value.
+            @var self.SecAccD Security access denied.
+            - "33" Protocol definition value.
+            @var self.UlDlNAcpt Upload download not accepted.
+            - "70" Protocol definition value.
+            """
+
+            def __init__(self):
+                """
+                @fn __init__
+                @brief Constructor for class cReqUpld.
+                @param None
+                @return None
+                """
+
+                LogTr("Enter cReqUpld.__init__()")
+
+                self.IncorMsgLenOrInvFmt = "13"
+                LogDbg(f"self.IncorMsgLenOrInvFmt = {self.IncorMsgLenOrInvFmt}")
+                self.CndNCor = "22"
+                LogDbg(f"self.CndNCor = {self.CndNCor}")
+                self.ReqOtRng = "31"
+                LogDbg(f"self.ReqOtRng = {self.ReqOtRng}")
+                self.SecAccD = "33"
+                LogDbg(f"self.SecAccD = {self.SecAccD}")
+                self.UlDlNAcpt = "70"
+                LogDbg(f"self.UlDlNAcpt = {self.UlDlNAcpt}")
+
+                LogTr("Exit cReqUpld.__init__()")
+
+        class cTxDat:
+            """
+            @class cTxDat
+            @brief The preset value of cTxDat.
+            @param None
+            @var self.IncorMsgLenOrInvFmt Incorrect message length or invalid format.
+            - "13" Protocol definition value.
+            @var self.ReqSeqErr Request sequence error.
+            - "24" Protocol definition value.
+            @var self.ReqOtRng Request out of range.
+            - "31" Protocol definition value.
+            @var self.TxDatSusp transfer data suspended.
+            - "71" Protocol definition value.
+            @var self.GenProgFail General Programming failure.
+            - "72" Protocol definition value.
+            @var self.WrgBlkSeqCnt Wrong block sequence counter.
+            - "73" Protocol definition value.
+            @var self.VHiOrLo Voltage too high. Voltage too low.
+            - "92~93" Protocol definition value.
+            """
+
+            def __init__(self):
+                """
+                @fn __init__
+                @brief Constructor for class cTxDat.
+                @param None
+                @return None
+                """
+
+                LogTr("Enter cTxDat.__init__()")
+
+                self.IncorMsgLenOrInvFmt = "13"
+                LogDbg(f"self.IncorMsgLenOrInvFmt = {self.IncorMsgLenOrInvFmt}")
+                self.ReqSeqErr = "24"
+                LogDbg(f"self.ReqSeqErr = {self.ReqSeqErr}")
+                self.ReqOtRng = "31"
+                LogDbg(f"self.ReqOtRng = {self.ReqOtRng}")
+                self.TxDatSusp = "71"
+                LogDbg(f"self.TxDatSusp = {self.TxDatSusp}")
+                self.GenProgFail = "72"
+                LogDbg(f"self.GenProgFail = {self.GenProgFail}")
+                self.WrgBlkSeqCnt = "73"
+                LogDbg(f"self.WrgBlkSeqCnt = {self.WrgBlkSeqCnt}")
+                self.VHiOrLo = "92~93"
+                LogDbg(f"self.VHiOrLo = {self.VHiOrLo}")
+
+                LogTr("Exit cTxDat.__init__()")
+
+        class cReqTxEx:
+            """
+            @class cReqTxEx
+            @brief The preset value of cReqTxEx.
+            @param None
+            @var self.IncorMsgLenOrInvFmt Incorrect message length or invalid format.
+            - "13" Protocol definition value.
+            @var self.ReqSeqErr Request sequence error.
+            - "24" Protocol definition value.
+            @var self.ReqOtRng Request out of range.
+            - "31" Protocol definition value.
+            @var self.GenProgFail General Programming failure.
+            - "72" Protocol definition value.
+            """
+
+            def __init__(self):
+                """
+                @fn __init__
+                @brief Constructor for class cReqTxEx.
+                @param None
+                @return None
+                """
+
+                LogTr("Enter cReqTxEx.__init__()")
+
+                self.IncorMsgLenOrInvFmt = "13"
+                LogDbg(f"self.IncorMsgLenOrInvFmt = {self.IncorMsgLenOrInvFmt}")
+                self.ReqSeqErr = "24"
+                LogDbg(f"self.ReqSeqErr = {self.ReqSeqErr}")
+                self.ReqOtRng = "31"
+                LogDbg(f"self.ReqOtRng = {self.ReqOtRng}")
+                self.GenProgFail = "72"
+                LogDbg(f"self.GenProgFail = {self.GenProgFail}")
+
+                LogTr("Exit cReqTxEx.__init__()")
+
+        class cReqFileTx:
+            """
+            @class cReqFileTx
+            @brief The preset value of cReqFileTx.
+            @param None
+            @var self.IncorMsgLenOrInvFmt Incorrect message length or invalid format.
+            - "13" Protocol definition value.
+            @var self.ReqSeqErr Request sequence error.
+            - "24" Protocol definition value.
+            @var self.ReqOtRng Request out of range.
+            - "31" Protocol definition value.
+            @var self.SecAccD Security access denied.
+            - "33" Protocol definition value.
+            @var self.UlDlNAcpt Upload download not accepted.
+            - "70" Protocol definition value.
+            """
+
+            def __init__(self):
+                """
+                @fn __init__
+                @brief Constructor for class cReqFileTx.
+                @param None
+                @return None
+                """
+
+                LogTr("Enter cReqFileTx.__init__()")
+
+                self.IncorMsgLenOrInvFmt = "13"
+                LogDbg(f"self.IncorMsgLenOrInvFmt = {self.IncorMsgLenOrInvFmt}")
+                self.ReqSeqErr = "24"
+                LogDbg(f"self.ReqSeqErr = {self.ReqSeqErr}")
+                self.ReqOtRng = "31"
+                LogDbg(f"self.ReqOtRng = {self.ReqOtRng}")
+                self.SecAccD = "33"
+                LogDbg(f"self.SecAccD = {self.SecAccD}")
+                self.UlDlNAcpt = "70"
+                LogDbg(f"self.UlDlNAcpt = {self.UlDlNAcpt}")
+
+                LogTr("Exit cReqFileTx.__init__()")
+
         def __init__(self):
             """
             @fn __init__
@@ -2005,6 +2323,7 @@ class cUdsSer:
 
         LogTr("Enter cUdsSer.__init__()")
 
+        self.MsgPset = cMsgPset()
         self.DoipSer = cDoipSer()
 
         LogTr("Exit cUdsSer.__init__()")
@@ -2101,8 +2420,16 @@ class cUdsSer:
 
         LogDbg(f"Msg = {Msg}")
 
-        self.DoipSer.RespPosDiag("00")
-        self.DoipSer.RespDiagMsg(Msg)
+        Sid = hex(int(Msg[:2], 16) & 0xBF)[2:]
+        LogDbg(f"Sid = {Sid}")
+        SubFun = Msg[2:4]
+        LogDbg(f"SubFun = {SubFun}")
+
+        if Sid == self.MsgPset.Sid.DiagSessCtrl:
+            self.DoipSer.RespPosDiag("00")
+            self.DoipSer.RespDiagMsg(Msg)
+        elif Sid == self.MsgPset.Sid.EcuRst:
+            pass
 
         LogTr("Exit cUdsClt.RespDiag")
 
